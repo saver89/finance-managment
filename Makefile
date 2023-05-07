@@ -13,4 +13,7 @@ postgres-migrate-up:
 postgres-migrate-down:
 	migrate -path internal/repository/postgres/migration -database "postgresql://root:secret@localhost:5432/finances?sslmode=disable" -verbose down 
 
-.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down
+sqlc:
+	sqlc generate
+
+.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down sqlc
