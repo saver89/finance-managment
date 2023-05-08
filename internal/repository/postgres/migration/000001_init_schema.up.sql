@@ -42,7 +42,7 @@ CREATE TABLE "office" (
   "type" office_type NOT NULL,
   "name" varchar NOT NULL,
   "state" office_state NOT NULL DEFAULT 'active',
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE "user" (
   "phone" varchar,
   "created_by" bigint,
   "state" user_state NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -68,7 +68,7 @@ CREATE TABLE "currency" (
   "name" varchar NOT NULL,
   "short_name" varchar NOT NULL,
   "state" currency_state NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -80,7 +80,7 @@ CREATE TABLE "account" (
   "currency_id" bigint NOT NULL,
   "created_by" bigint NOT NULL,
   "state" account_state NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -89,7 +89,7 @@ CREATE TABLE "office_currency" (
   "office_id" bigint NOT NULL,
   "currency_id" bigint NOT NULL,
   "type" office_currency_type NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -99,7 +99,7 @@ CREATE TABLE "office_currency_rate" (
   "from_currency_id" bigint NOT NULL,
   "to_currency_id" bigint NOT NULL,
   "rate" numeric(32,6) NOT NULL DEFAULT 1,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -110,8 +110,9 @@ CREATE TABLE "transactions" (
   "from_account_id" bigint NOT NULL,
   "to_account_id" bigint,
   "amount" numeric(32,6) NOT NULL,
+  "currency_id" bigint NOT NULL,
   "created_by" bigint,
-  "created_at" timestamptz NOT NULL DEFAULT 'now()',
+  "created_at" timestamptz NOT NULL DEFAULT now(),
   "deleted_at" timestamptz
 );
 
@@ -144,3 +145,5 @@ ALTER TABLE "transactions" ADD FOREIGN KEY ("from_account_id") REFERENCES "accou
 ALTER TABLE "transactions" ADD FOREIGN KEY ("to_account_id") REFERENCES "account" ("id");
 
 ALTER TABLE "transactions" ADD FOREIGN KEY ("created_by") REFERENCES "user" ("id");
+
+ALTER TABLE "transactions" ADD FOREIGN KEY ("currency_id") REFERENCES "currency" ("id");

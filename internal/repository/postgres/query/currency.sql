@@ -8,11 +8,13 @@ RETURNING *;
 
 -- name: GetCurrency :one
 SELECT * FROM currency
-WHERE id = $1 LIMIT 1;
+WHERE id = $1 and deleted_at is null
+LIMIT 1;
 
 -- name: ListCurrency :many
 SELECT * FROM currency
-ORDER BY name
+where deleted_at is null
+ORDER BY short_name
 LIMIT $1
 OFFSET $2;
 
@@ -21,4 +23,10 @@ UPDATE currency
   set name = $2,
   short_name = $3
 WHERE id = $1
+  and deleted_at is null
 RETURNING *;
+
+-- name: DeleteCurrency :exec
+UPDATE currency
+  set deleted_at = now()
+WHERE id = $1;

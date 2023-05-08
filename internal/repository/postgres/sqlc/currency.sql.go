@@ -37,9 +37,21 @@ func (q *Queries) CreateCurrency(ctx context.Context, arg CreateCurrencyParams) 
 	return i, err
 }
 
+const deleteCurrency = `-- name: DeleteCurrency :exec
+UPDATE currency
+  set deleted_at = now()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteCurrency(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteCurrency, id)
+	return err
+}
+
 const getCurrency = `-- name: GetCurrency :one
 SELECT id, name, short_name, state, created_at, deleted_at FROM currency
-WHERE id = $1 LIMIT 1
+WHERE id = $1 and deleted_at is null
+LIMIT 1
 `
 
 func (q *Queries) GetCurrency(ctx context.Context, id int64) (Currency, error) {
@@ -58,7 +70,8 @@ func (q *Queries) GetCurrency(ctx context.Context, id int64) (Currency, error) {
 
 const listCurrency = `-- name: ListCurrency :many
 SELECT id, name, short_name, state, created_at, deleted_at FROM currency
-ORDER BY name
+where deleted_at is null
+ORDER BY short_name
 LIMIT $1
 OFFSET $2
 `
@@ -103,6 +116,7 @@ UPDATE currency
   set name = $2,
   short_name = $3
 WHERE id = $1
+  and deleted_at is null
 RETURNING id, name, short_name, state, created_at, deleted_at
 `
 

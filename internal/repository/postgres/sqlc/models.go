@@ -365,6 +365,7 @@ type Transaction struct {
 	FromAccountID int64           `db:"from_account_id"`
 	ToAccountID   sql.NullInt64   `db:"to_account_id"`
 	Amount        string          `db:"amount"`
+	CurrencyID    int64           `db:"currency_id"`
 	CreatedBy     sql.NullInt64   `db:"created_by"`
 	CreatedAt     time.Time       `db:"created_at"`
 	DeletedAt     sql.NullTime    `db:"deleted_at"`
