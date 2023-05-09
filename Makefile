@@ -16,4 +16,7 @@ postgres-migrate-down:
 sqlc:
 	sqlc generate
 
-.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down sqlc
+test:
+	go test -v -cover ./...
+
+.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down sqlc test
