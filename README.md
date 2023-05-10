@@ -9,6 +9,7 @@ make postgres-dropdb - drop db finances
 make postgres-migrate-up - execute migration in db finances
 make postgres-migrate-down - revert migration in db finances
 make sqlc - generate "db" package with query to database
+make test - execute tests and get test coverage
 ```
 
 ### target functionality:

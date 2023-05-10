@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -82,4 +83,14 @@ func TestListCurrency(t *testing.T) {
 	for _, currency := range currencies {
 		assert.NotEmpty(t, currency)
 	}
+}
+
+func TestDeleteCurrency(t *testing.T) {
+	currency := createRandomCurrency(t)
+
+	err := testQueries.DeleteCurrency(context.Background(), currency.ID)
+	assert.NoError(t, err)
+	
+	_, err = testQueries.GetCurrency(context.Background(), currency.ID)
+	assert.ErrorIs(t, err, sql.ErrNoRows)
 }

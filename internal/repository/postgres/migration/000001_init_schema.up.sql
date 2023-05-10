@@ -38,7 +38,7 @@ CREATE TYPE "transaction_type" AS ENUM (
 
 CREATE TABLE "office" (
   "id" bigserial PRIMARY KEY,
-  "parent_id" bigint,
+  "parent_id" bigint NOT NULL,
   "type" office_type NOT NULL,
   "name" varchar NOT NULL,
   "state" office_state NOT NULL DEFAULT 'active',

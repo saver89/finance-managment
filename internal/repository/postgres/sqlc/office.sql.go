@@ -7,32 +7,49 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
-const createOffice = `-- name: CreateOffice :one
+const addOffice = `-- name: AddOffice :one
 INSERT INTO office (
-  id, parent_id, type, name
+  parent_id, type, name
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3
 )
 RETURNING id, parent_id, type, name, state, created_at, deleted_at
 `
 
-type CreateOfficeParams struct {
-	ID       int64         `db:"id"`
-	ParentID sql.NullInt64 `db:"parent_id"`
-	Type     OfficeType    `db:"type"`
-	Name     string        `db:"name"`
+type AddOfficeParams struct {
+	ParentID int64      `db:"parent_id"`
+	Type     OfficeType `db:"type"`
+	Name     string     `db:"name"`
 }
 
-func (q *Queries) CreateOffice(ctx context.Context, arg CreateOfficeParams) (Office, error) {
-	row := q.db.QueryRowContext(ctx, createOffice,
-		arg.ID,
-		arg.ParentID,
-		arg.Type,
-		arg.Name,
+func (q *Queries) AddOffice(ctx context.Context, arg AddOfficeParams) (Office, error) {
+	row := q.db.QueryRowContext(ctx, addOffice, arg.ParentID, arg.Type, arg.Name)
+	var i Office
+	err := row.Scan(
+		&i.ID,
+		&i.ParentID,
+		&i.Type,
+		&i.Name,
+		&i.State,
+		&i.CreatedAt,
+		&i.DeletedAt,
 	)
+	return i, err
+}
+
+const createHQOffice = `-- name: CreateHQOffice :one
+INSERT INTO office (
+  type, name, parent_id
+) VALUES (
+  'hq', $1, lastval()
+)
+RETURNING id, parent_id, type, name, state, created_at, deleted_at
+`
+
+func (q *Queries) CreateHQOffice(ctx context.Context, name string) (Office, error) {
+	row := q.db.QueryRowContext(ctx, createHQOffice, name)
 	var i Office
 	err := row.Scan(
 		&i.ID,
@@ -69,19 +86,20 @@ func (q *Queries) GetOffice(ctx context.Context, id int64) (Office, error) {
 
 const listOffice = `-- name: ListOffice :many
 SELECT id, parent_id, type, name, state, created_at, deleted_at FROM office
-WHERE deleted_at is null
+WHERE deleted_at is null and type = $1
 ORDER BY id DESC
-LIMIT $1
-OFFSET $2
+LIMIT $2
+OFFSET $3
 `
 
 type ListOfficeParams struct {
-	Limit  int32 `db:"limit"`
-	Offset int32 `db:"offset"`
+	Type   OfficeType `db:"type"`
+	Limit  int32      `db:"limit"`
+	Offset int32      `db:"offset"`
 }
 
 func (q *Queries) ListOffice(ctx context.Context, arg ListOfficeParams) ([]Office, error) {
-	rows, err := q.db.QueryContext(ctx, listOffice, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listOffice, arg.Type, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -113,20 +131,18 @@ func (q *Queries) ListOffice(ctx context.Context, arg ListOfficeParams) ([]Offic
 
 const updateOffice = `-- name: UpdateOffice :one
 UPDATE office
-  set name = $2,
-  type = $3
+  set name = $2
 WHERE id = $1 and deleted_at is null
 RETURNING id, parent_id, type, name, state, created_at, deleted_at
 `
 
 type UpdateOfficeParams struct {
-	ID   int64      `db:"id"`
-	Name string     `db:"name"`
-	Type OfficeType `db:"type"`
+	ID   int64  `db:"id"`
+	Name string `db:"name"`
 }
 
 func (q *Queries) UpdateOffice(ctx context.Context, arg UpdateOfficeParams) (Office, error) {
-	row := q.db.QueryRowContext(ctx, updateOffice, arg.ID, arg.Name, arg.Type)
+	row := q.db.QueryRowContext(ctx, updateOffice, arg.ID, arg.Name)
 	var i Office
 	err := row.Scan(
 		&i.ID,

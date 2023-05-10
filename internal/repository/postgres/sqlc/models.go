@@ -330,13 +330,13 @@ type Currency struct {
 }
 
 type Office struct {
-	ID        int64         `db:"id"`
-	ParentID  sql.NullInt64 `db:"parent_id"`
-	Type      OfficeType    `db:"type"`
-	Name      string        `db:"name"`
-	State     OfficeState   `db:"state"`
-	CreatedAt time.Time     `db:"created_at"`
-	DeletedAt sql.NullTime  `db:"deleted_at"`
+	ID        int64        `db:"id"`
+	ParentID  int64        `db:"parent_id"`
+	Type      OfficeType   `db:"type"`
+	Name      string       `db:"name"`
+	State     OfficeState  `db:"state"`
+	CreatedAt time.Time    `db:"created_at"`
+	DeletedAt sql.NullTime `db:"deleted_at"`
 }
 
 type OfficeCurrency struct {
