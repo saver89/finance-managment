@@ -54,7 +54,7 @@ CREATE TABLE "user" (
   "first_name" varchar,
   "last_name" varchar,
   "middle_name" varchar,
-  "birthdate" timestamp,
+  "birthday" timestamp,
   "email" varchar,
   "phone" varchar,
   "created_by" bigint,

@@ -76,19 +76,30 @@ func (q *Queries) GetOfficeCurrencyRate(ctx context.Context, id int64) (OfficeCu
 
 const listOfficeCurrencyRate = `-- name: ListOfficeCurrencyRate :many
 select id, office_id, from_currency_id, to_currency_id, rate, created_at, deleted_at from office_currency_rate 
-where deleted_at is null and office_id = $1
-LIMIT $2
-OFFSET $3
+where deleted_at is null 
+  and office_id = $1 
+  and from_currency_id = $2 
+  and to_currency_id = $3
+LIMIT $4
+OFFSET $5
 `
 
 type ListOfficeCurrencyRateParams struct {
-	OfficeID int64 `db:"office_id"`
-	Limit    int32 `db:"limit"`
-	Offset   int32 `db:"offset"`
+	OfficeID       int64 `db:"office_id"`
+	FromCurrencyID int64 `db:"from_currency_id"`
+	ToCurrencyID   int64 `db:"to_currency_id"`
+	Limit          int32 `db:"limit"`
+	Offset         int32 `db:"offset"`
 }
 
 func (q *Queries) ListOfficeCurrencyRate(ctx context.Context, arg ListOfficeCurrencyRateParams) ([]OfficeCurrencyRate, error) {
-	rows, err := q.db.QueryContext(ctx, listOfficeCurrencyRate, arg.OfficeID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listOfficeCurrencyRate,
+		arg.OfficeID,
+		arg.FromCurrencyID,
+		arg.ToCurrencyID,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -116,4 +127,29 @@ func (q *Queries) ListOfficeCurrencyRate(ctx context.Context, arg ListOfficeCurr
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateOfficeCurrencyRate = `-- name: UpdateOfficeCurrencyRate :one
+update office_currency_rate set rate = $2 where id = $1
+returning id, office_id, from_currency_id, to_currency_id, rate, created_at, deleted_at
+`
+
+type UpdateOfficeCurrencyRateParams struct {
+	ID   int64  `db:"id"`
+	Rate string `db:"rate"`
+}
+
+func (q *Queries) UpdateOfficeCurrencyRate(ctx context.Context, arg UpdateOfficeCurrencyRateParams) (OfficeCurrencyRate, error) {
+	row := q.db.QueryRowContext(ctx, updateOfficeCurrencyRate, arg.ID, arg.Rate)
+	var i OfficeCurrencyRate
+	err := row.Scan(
+		&i.ID,
+		&i.OfficeID,
+		&i.FromCurrencyID,
+		&i.ToCurrencyID,
+		&i.Rate,
+		&i.CreatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

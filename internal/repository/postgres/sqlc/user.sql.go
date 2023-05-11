@@ -13,10 +13,10 @@ import (
 const createUser = `-- name: CreateUser :one
 insert into "user" (
   office_id, username, password_hash, first_name, last_name, 
-  middle_name, birthdate, email, phone, created_by, state
+  middle_name, birthday, email, phone, state
 )
-values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'active')
-returning id, office_id, username, password_hash, first_name, last_name, middle_name, birthdate, email, phone, created_by, state, created_at, deleted_at
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active')
+returning id, office_id, username, password_hash, first_name, last_name, middle_name, birthday, email, phone, created_by, state, created_at, deleted_at
 `
 
 type CreateUserParams struct {
@@ -26,10 +26,9 @@ type CreateUserParams struct {
 	FirstName    sql.NullString `db:"first_name"`
 	LastName     sql.NullString `db:"last_name"`
 	MiddleName   sql.NullString `db:"middle_name"`
-	Birthdate    sql.NullTime   `db:"birthdate"`
+	Birthday     sql.NullTime   `db:"birthday"`
 	Email        sql.NullString `db:"email"`
 	Phone        sql.NullString `db:"phone"`
-	CreatedBy    sql.NullInt64  `db:"created_by"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -40,10 +39,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.FirstName,
 		arg.LastName,
 		arg.MiddleName,
-		arg.Birthdate,
+		arg.Birthday,
 		arg.Email,
 		arg.Phone,
-		arg.CreatedBy,
 	)
 	var i User
 	err := row.Scan(
@@ -54,7 +52,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.MiddleName,
-		&i.Birthdate,
+		&i.Birthday,
 		&i.Email,
 		&i.Phone,
 		&i.CreatedBy,
@@ -75,7 +73,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-select id, office_id, username, password_hash, first_name, last_name, middle_name, birthdate, email, phone, created_by, state, created_at, deleted_at from "user" where "id" = $1 and "deleted_at" is null
+select id, office_id, username, password_hash, first_name, last_name, middle_name, birthday, email, phone, created_by, state, created_at, deleted_at from "user" where "id" = $1 and "deleted_at" is null
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
@@ -89,7 +87,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.FirstName,
 		&i.LastName,
 		&i.MiddleName,
-		&i.Birthdate,
+		&i.Birthday,
 		&i.Email,
 		&i.Phone,
 		&i.CreatedBy,
@@ -101,18 +99,19 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listUser = `-- name: ListUser :many
-select id, office_id, username, password_hash, first_name, last_name, middle_name, birthdate, email, phone, created_by, state, created_at, deleted_at from "user" where "deleted_at" is null
+select id, office_id, username, password_hash, first_name, last_name, middle_name, birthday, email, phone, created_by, state, created_at, deleted_at from "user" where "deleted_at" is null and office_id = $3
 LIMIT $1
 OFFSET $2
 `
 
 type ListUserParams struct {
-	Limit  int32 `db:"limit"`
-	Offset int32 `db:"offset"`
+	Limit    int32 `db:"limit"`
+	Offset   int32 `db:"offset"`
+	OfficeID int64 `db:"office_id"`
 }
 
 func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUser, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listUser, arg.Limit, arg.Offset, arg.OfficeID)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +127,7 @@ func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, err
 			&i.FirstName,
 			&i.LastName,
 			&i.MiddleName,
-			&i.Birthdate,
+			&i.Birthday,
 			&i.Email,
 			&i.Phone,
 			&i.CreatedBy,
@@ -149,11 +148,12 @@ func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, err
 	return items, nil
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :one
 update "user" set password_hash = $1, 
-  first_name = $2, last_name = $3, middle_name = $4, birthdate = $5, 
+  first_name = $2, last_name = $3, middle_name = $4, birthday = $5, 
   email = $6, phone = $7
 where "id" = $8 and "deleted_at" is null
+returning id, office_id, username, password_hash, first_name, last_name, middle_name, birthday, email, phone, created_by, state, created_at, deleted_at
 `
 
 type UpdateUserParams struct {
@@ -161,22 +161,39 @@ type UpdateUserParams struct {
 	FirstName    sql.NullString `db:"first_name"`
 	LastName     sql.NullString `db:"last_name"`
 	MiddleName   sql.NullString `db:"middle_name"`
-	Birthdate    sql.NullTime   `db:"birthdate"`
+	Birthday     sql.NullTime   `db:"birthday"`
 	Email        sql.NullString `db:"email"`
 	Phone        sql.NullString `db:"phone"`
 	ID           int64          `db:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.PasswordHash,
 		arg.FirstName,
 		arg.LastName,
 		arg.MiddleName,
-		arg.Birthdate,
+		arg.Birthday,
 		arg.Email,
 		arg.Phone,
 		arg.ID,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.OfficeID,
+		&i.Username,
+		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
+		&i.MiddleName,
+		&i.Birthday,
+		&i.Email,
+		&i.Phone,
+		&i.CreatedBy,
+		&i.State,
+		&i.CreatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

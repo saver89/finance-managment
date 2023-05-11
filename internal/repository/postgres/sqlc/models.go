@@ -379,7 +379,7 @@ type User struct {
 	FirstName    sql.NullString `db:"first_name"`
 	LastName     sql.NullString `db:"last_name"`
 	MiddleName   sql.NullString `db:"middle_name"`
-	Birthdate    sql.NullTime   `db:"birthdate"`
+	Birthday     sql.NullTime   `db:"birthday"`
 	Email        sql.NullString `db:"email"`
 	Phone        sql.NullString `db:"phone"`
 	CreatedBy    sql.NullInt64  `db:"created_by"`

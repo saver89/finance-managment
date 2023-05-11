@@ -86,11 +86,12 @@ func TestListCurrency(t *testing.T) {
 }
 
 func TestDeleteCurrency(t *testing.T) {
-	currency := createRandomCurrency(t)
+	currency1 := createRandomCurrency(t)
 
-	err := testQueries.DeleteCurrency(context.Background(), currency.ID)
+	err := testQueries.DeleteCurrency(context.Background(), currency1.ID)
 	assert.NoError(t, err)
-	
-	_, err = testQueries.GetCurrency(context.Background(), currency.ID)
+
+	currency2, err := testQueries.GetCurrency(context.Background(), currency1.ID)
 	assert.ErrorIs(t, err, sql.ErrNoRows)
+	assert.Empty(t, currency2)
 }
