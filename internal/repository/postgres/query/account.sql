@@ -9,7 +9,8 @@ insert into account (
 select * from account where id = $1 and deleted_at is null;
 
 -- name: ListAccount :many
-select * from account where deleted_at is null
+select * from account 
+where deleted_at is null and office_id = $3
 LIMIT $1
 OFFSET $2;
 

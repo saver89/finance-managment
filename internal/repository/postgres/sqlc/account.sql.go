@@ -77,18 +77,20 @@ func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 }
 
 const listAccount = `-- name: ListAccount :many
-select id, office_id, name, balance, currency_id, created_by, state, created_at, deleted_at from account where deleted_at is null
+select id, office_id, name, balance, currency_id, created_by, state, created_at, deleted_at from account 
+where deleted_at is null and office_id = $3
 LIMIT $1
 OFFSET $2
 `
 
 type ListAccountParams struct {
-	Limit  int32 `db:"limit"`
-	Offset int32 `db:"offset"`
+	Limit    int32 `db:"limit"`
+	Offset   int32 `db:"offset"`
+	OfficeID int64 `db:"office_id"`
 }
 
 func (q *Queries) ListAccount(ctx context.Context, arg ListAccountParams) ([]Account, error) {
-	rows, err := q.db.QueryContext(ctx, listAccount, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listAccount, arg.Limit, arg.Offset, arg.OfficeID)
 	if err != nil {
 		return nil, err
 	}
