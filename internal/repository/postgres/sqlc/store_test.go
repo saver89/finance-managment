@@ -157,7 +157,7 @@ func TestTransferTxDeadLock(t *testing.T) {
 		}
 
 		go func() {
-			result, err := store.TransferTx(context.Background(), TransferTxParam{
+			_, err := store.TransferTx(context.Background(), TransferTxParam{
 				OfficeID:      office.ID,
 				FromAccountID: fromAccount.ID,
 				ToAccountID:   toAccount.ID,
