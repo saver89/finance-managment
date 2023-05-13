@@ -72,16 +72,16 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (Transf
 
 		// update account balance
 		result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:      arg.FromAccountID,
-			Balance: fmt.Sprintf("%f", -arg.Amount),
+			ID:     arg.FromAccountID,
+			Amount: fmt.Sprintf("%f", -arg.Amount),
 		})
 		if err != nil {
 			return err
 		}
 
 		result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:      arg.ToAccountID,
-			Balance: fmt.Sprintf("%f", arg.Amount),
+			ID:     arg.ToAccountID,
+			Amount: fmt.Sprintf("%f", arg.Amount),
 		})
 		if err != nil {
 			return err
