@@ -8,6 +8,9 @@ insert into account (
 -- name: GetAccount :one
 select * from account where id = $1 and deleted_at is null;
 
+-- name: GetAccountForUpdate :one
+select * from account where id = $1 and deleted_at is null for no key update;
+
 -- name: ListAccount :many
 select * from account 
 where deleted_at is null and office_id = $3
@@ -16,6 +19,11 @@ OFFSET $2;
 
 -- name: UpdateAccount :one
 update account set name = $2, currency_id = $3
+where id = $1 and deleted_at is null
+returning *;
+
+-- name: UpdateAccountBalance :one
+update account set balance = $2
 where id = $1 and deleted_at is null
 returning *;
 

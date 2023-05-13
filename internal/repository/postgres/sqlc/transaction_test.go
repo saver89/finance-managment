@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type createRandomTransactionParams struct {
@@ -65,17 +65,17 @@ func createRandomTransaction(t *testing.T, param createRandomTransactionParams) 
 		CreatedBy:     sql.NullInt64{Int64: param.CreatedBy, Valid: true},
 	}
 	transaction, err := testQueries.CreateTransaction(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, transaction)
-	assert.NotZero(t, transaction.ID)
-	assert.Equal(t, arg.OfficeID, transaction.OfficeID)
-	assert.Equal(t, arg.Type, transaction.Type)
-	assert.Equal(t, arg.FromAccountID, transaction.FromAccountID)
-	assert.Equal(t, arg.ToAccountID, transaction.ToAccountID)
-	assert.Equal(t, arg.Amount, transaction.Amount)
-	assert.Equal(t, arg.CurrencyID, transaction.CurrencyID)
-	assert.Equal(t, arg.CreatedBy, transaction.CreatedBy)
-	assert.NotZero(t, transaction.CreatedAt)
+	require.NoError(t, err)
+	require.NotEmpty(t, transaction)
+	require.NotZero(t, transaction.ID)
+	require.Equal(t, arg.OfficeID, transaction.OfficeID)
+	require.Equal(t, arg.Type, transaction.Type)
+	require.Equal(t, arg.FromAccountID, transaction.FromAccountID)
+	require.Equal(t, arg.ToAccountID, transaction.ToAccountID)
+	require.Equal(t, arg.Amount, transaction.Amount)
+	require.Equal(t, arg.CurrencyID, transaction.CurrencyID)
+	require.Equal(t, arg.CreatedBy, transaction.CreatedBy)
+	require.NotZero(t, transaction.CreatedAt)
 
 	return transaction
 }
@@ -87,25 +87,25 @@ func TestCreateTransaction(t *testing.T) {
 func TestGetTransaction(t *testing.T) {
 	transaction1 := createRandomTransaction(t, createRandomTransactionParams{})
 	transaction2, err := testQueries.GetTransaction(context.Background(), transaction1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, transaction2)
-	assert.Equal(t, transaction1.ID, transaction2.ID)
-	assert.Equal(t, transaction1.OfficeID, transaction2.OfficeID)
-	assert.Equal(t, transaction1.Type, transaction2.Type)
-	assert.Equal(t, transaction1.FromAccountID, transaction2.FromAccountID)
-	assert.Equal(t, transaction1.ToAccountID, transaction2.ToAccountID)
-	assert.Equal(t, transaction1.Amount, transaction2.Amount)
-	assert.Equal(t, transaction1.CurrencyID, transaction2.CurrencyID)
-	assert.Equal(t, transaction1.CreatedBy, transaction2.CreatedBy)
-	assert.WithinDuration(t, transaction1.CreatedAt, transaction2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, transaction2)
+	require.Equal(t, transaction1.ID, transaction2.ID)
+	require.Equal(t, transaction1.OfficeID, transaction2.OfficeID)
+	require.Equal(t, transaction1.Type, transaction2.Type)
+	require.Equal(t, transaction1.FromAccountID, transaction2.FromAccountID)
+	require.Equal(t, transaction1.ToAccountID, transaction2.ToAccountID)
+	require.Equal(t, transaction1.Amount, transaction2.Amount)
+	require.Equal(t, transaction1.CurrencyID, transaction2.CurrencyID)
+	require.Equal(t, transaction1.CreatedBy, transaction2.CreatedBy)
+	require.WithinDuration(t, transaction1.CreatedAt, transaction2.CreatedAt, time.Second)
 }
 
 func TestDeleteTransaction(t *testing.T) {
 	transaction1 := createRandomTransaction(t, createRandomTransactionParams{})
 	err := testQueries.DeleteTransaction(context.Background(), transaction1.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	transaction2, err := testQueries.GetTransaction(context.Background(), transaction1.ID)
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, transaction2)
+	require.Error(t, err)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, transaction2)
 }

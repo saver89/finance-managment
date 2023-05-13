@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 )
 
 type Store struct {
@@ -47,13 +48,21 @@ type TransferTxParam struct {
 
 type TransferTxResult struct {
 	Transaction Transaction `json:"transaction"`
+	FromAccount Account
+	ToAccount   Account
 }
+
+var txKey = struct{}{}
 
 func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
+
+		txName := ctx.Value(txKey).(string)
+
+		fmt.Println(txName, "create transaction")
 		result.Transaction, err = q.CreateTransaction(ctx, CreateTransactionParams{
 			OfficeID:      arg.OfficeID,
 			Type:          TransactionTypeTransfer,
@@ -67,7 +76,43 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (Transf
 			return err
 		}
 
-		// TODO update account balance
+		// update account balance
+		fmt.Println(txName, "get fromAccount")
+		fromAccount, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
+		if err != nil {
+			return err
+		}
+		fromAccountBalance, err := strconv.ParseFloat(fromAccount.Balance, 64)
+		if err != nil {
+			return err
+		}
+		fmt.Println(txName, "update from account")
+		result.FromAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
+			ID:      fromAccount.ID,
+			Balance: fmt.Sprintf("%f", fromAccountBalance-arg.Amount),
+		})
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(txName, "get to account")
+		toAccount, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
+		if err != nil {
+			return err
+		}
+		toAccountBalance, err := strconv.ParseFloat(toAccount.Balance, 64)
+		if err != nil {
+			return err
+		}
+		fmt.Println(txName, "update to account")
+		result.ToAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
+			ID:      toAccount.ID,
+			Balance: fmt.Sprintf("%f", toAccountBalance+arg.Amount),
+		})
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
 

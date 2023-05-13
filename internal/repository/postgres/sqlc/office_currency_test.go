@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createRandomOfficeCurrency(t *testing.T, officeID int64) OfficeCurrency {
@@ -23,13 +23,13 @@ func createRandomOfficeCurrency(t *testing.T, officeID int64) OfficeCurrency {
 	}
 
 	officeCurrency, err := testQueries.CreateOfficeCurrency(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, officeCurrency)
-	assert.NotZero(t, officeCurrency.ID)
-	assert.Equal(t, arg.OfficeID, officeCurrency.OfficeID)
-	assert.Equal(t, arg.CurrencyID, officeCurrency.CurrencyID)
-	assert.Equal(t, arg.Type, officeCurrency.Type)
-	assert.NotEmpty(t, officeCurrency.CreatedAt)
+	require.NoError(t, err)
+	require.NotEmpty(t, officeCurrency)
+	require.NotZero(t, officeCurrency.ID)
+	require.Equal(t, arg.OfficeID, officeCurrency.OfficeID)
+	require.Equal(t, arg.CurrencyID, officeCurrency.CurrencyID)
+	require.Equal(t, arg.Type, officeCurrency.Type)
+	require.NotEmpty(t, officeCurrency.CreatedAt)
 
 	return officeCurrency
 }
@@ -42,24 +42,24 @@ func TestOfficeCurrencyGet(t *testing.T) {
 	officeCurrency1 := createRandomOfficeCurrency(t, 0)
 
 	officeCurrency2, err := testQueries.GetOfficeCurrency(context.Background(), officeCurrency1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, officeCurrency2)
-	assert.Equal(t, officeCurrency1.ID, officeCurrency2.ID)
-	assert.Equal(t, officeCurrency1.OfficeID, officeCurrency2.OfficeID)
-	assert.Equal(t, officeCurrency1.CurrencyID, officeCurrency2.CurrencyID)
-	assert.Equal(t, officeCurrency1.Type, officeCurrency2.Type)
-	assert.WithinDuration(t, officeCurrency1.CreatedAt, officeCurrency2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, officeCurrency2)
+	require.Equal(t, officeCurrency1.ID, officeCurrency2.ID)
+	require.Equal(t, officeCurrency1.OfficeID, officeCurrency2.OfficeID)
+	require.Equal(t, officeCurrency1.CurrencyID, officeCurrency2.CurrencyID)
+	require.Equal(t, officeCurrency1.Type, officeCurrency2.Type)
+	require.WithinDuration(t, officeCurrency1.CreatedAt, officeCurrency2.CreatedAt, time.Second)
 }
 
 func TestOfficeCurrencyDelete(t *testing.T) {
 	officeCurrency := createRandomOfficeCurrency(t, 0)
 
 	err := testQueries.DeleteOfficeCurrency(context.Background(), officeCurrency.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	officeCurrency2, err := testQueries.GetOfficeCurrency(context.Background(), officeCurrency.ID)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, officeCurrency2)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, officeCurrency2)
 }
 
 func TestOfficeCurrencyList(t *testing.T) {
@@ -69,10 +69,10 @@ func TestOfficeCurrencyList(t *testing.T) {
 	}
 
 	officeCurrencies, err := testQueries.ListOfficeCurrency(context.Background(), office.ID)
-	assert.NoError(t, err)
-	assert.Len(t, officeCurrencies, 10)
+	require.NoError(t, err)
+	require.Len(t, officeCurrencies, 10)
 
 	for _, officeCurrency := range officeCurrencies {
-		assert.NotEmpty(t, officeCurrency)
+		require.NotEmpty(t, officeCurrency)
 	}
 }

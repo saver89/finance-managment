@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createRandomCurrency(t *testing.T) Currency {
@@ -18,14 +18,14 @@ func createRandomCurrency(t *testing.T) Currency {
 	}
 
 	currency, err := testQueries.CreateCurrency(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, currency)
+	require.NoError(t, err)
+	require.NotEmpty(t, currency)
 
-	assert.Equal(t, arg.Name, currency.Name)
-	assert.Equal(t, arg.ShortName, currency.ShortName)
-	assert.Equal(t, CurrencyStateActive, currency.State)
-	assert.NotZero(t, currency.ID)
-	assert.NotZero(t, currency.CreatedAt)
+	require.Equal(t, arg.Name, currency.Name)
+	require.Equal(t, arg.ShortName, currency.ShortName)
+	require.Equal(t, CurrencyStateActive, currency.State)
+	require.NotZero(t, currency.ID)
+	require.NotZero(t, currency.CreatedAt)
 
 	return currency
 }
@@ -37,14 +37,14 @@ func TestCreateCurrency(t *testing.T) {
 func TestGetCurrency(t *testing.T) {
 	currency1 := createRandomCurrency(t)
 	currency2, err := testQueries.GetCurrency(context.Background(), currency1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, currency2)
+	require.NoError(t, err)
+	require.NotEmpty(t, currency2)
 
-	assert.Equal(t, currency1.ID, currency2.ID)
-	assert.Equal(t, currency1.Name, currency2.Name)
-	assert.Equal(t, currency1.ShortName, currency2.ShortName)
-	assert.Equal(t, currency1.State, currency2.State)
-	assert.WithinDuration(t, currency1.CreatedAt, currency2.CreatedAt, time.Second)
+	require.Equal(t, currency1.ID, currency2.ID)
+	require.Equal(t, currency1.Name, currency2.Name)
+	require.Equal(t, currency1.ShortName, currency2.ShortName)
+	require.Equal(t, currency1.State, currency2.State)
+	require.WithinDuration(t, currency1.CreatedAt, currency2.CreatedAt, time.Second)
 }
 
 func TestUpdateCurrency(t *testing.T) {
@@ -58,13 +58,13 @@ func TestUpdateCurrency(t *testing.T) {
 	}
 
 	currency2, err := testQueries.UpdateCurrency(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, currency2)
-	assert.Equal(t, arg.ID, currency2.ID)
-	assert.Equal(t, arg.Name, currency2.Name)
-	assert.Equal(t, arg.ShortName, currency2.ShortName)
-	assert.Equal(t, currency1.State, currency2.State)
-	assert.WithinDuration(t, currency1.CreatedAt, currency2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, currency2)
+	require.Equal(t, arg.ID, currency2.ID)
+	require.Equal(t, arg.Name, currency2.Name)
+	require.Equal(t, arg.ShortName, currency2.ShortName)
+	require.Equal(t, currency1.State, currency2.State)
+	require.WithinDuration(t, currency1.CreatedAt, currency2.CreatedAt, time.Second)
 }
 
 func TestListCurrency(t *testing.T) {
@@ -78,10 +78,10 @@ func TestListCurrency(t *testing.T) {
 	}
 
 	currencies, err := testQueries.ListCurrency(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.Len(t, currencies, 5)
+	require.NoError(t, err)
+	require.Len(t, currencies, 5)
 	for _, currency := range currencies {
-		assert.NotEmpty(t, currency)
+		require.NotEmpty(t, currency)
 	}
 }
 
@@ -89,9 +89,9 @@ func TestDeleteCurrency(t *testing.T) {
 	currency1 := createRandomCurrency(t)
 
 	err := testQueries.DeleteCurrency(context.Background(), currency1.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	currency2, err := testQueries.GetCurrency(context.Background(), currency1.ID)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, currency2)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, currency2)
 }

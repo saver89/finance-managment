@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type createCurrencyRateParam struct {
@@ -40,14 +40,14 @@ func createRandomOfficeCurrencyRate(t *testing.T, param createCurrencyRateParam)
 	}
 
 	officeCurrencyRate, err := testQueries.CreateOfficeCurrencyRate(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, officeCurrencyRate)
-	assert.NotZero(t, officeCurrencyRate.ID)
-	assert.Equal(t, arg.OfficeID, officeCurrencyRate.OfficeID)
-	assert.Equal(t, arg.FromCurrencyID, officeCurrencyRate.FromCurrencyID)
-	assert.Equal(t, arg.ToCurrencyID, officeCurrencyRate.ToCurrencyID)
-	assert.Equal(t, arg.Rate, officeCurrencyRate.Rate)
-	assert.NotEmpty(t, officeCurrencyRate.CreatedAt)
+	require.NoError(t, err)
+	require.NotEmpty(t, officeCurrencyRate)
+	require.NotZero(t, officeCurrencyRate.ID)
+	require.Equal(t, arg.OfficeID, officeCurrencyRate.OfficeID)
+	require.Equal(t, arg.FromCurrencyID, officeCurrencyRate.FromCurrencyID)
+	require.Equal(t, arg.ToCurrencyID, officeCurrencyRate.ToCurrencyID)
+	require.Equal(t, arg.Rate, officeCurrencyRate.Rate)
+	require.NotEmpty(t, officeCurrencyRate.CreatedAt)
 
 	return officeCurrencyRate
 }
@@ -60,14 +60,14 @@ func TestGetOfficeCurrencyRate(t *testing.T) {
 	officeCurrencyRate1 := createRandomOfficeCurrencyRate(t, createCurrencyRateParam{})
 
 	officeCurrencyRate2, err := testQueries.GetOfficeCurrencyRate(context.Background(), officeCurrencyRate1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, officeCurrencyRate2)
-	assert.Equal(t, officeCurrencyRate1.ID, officeCurrencyRate2.ID)
-	assert.Equal(t, officeCurrencyRate1.OfficeID, officeCurrencyRate2.OfficeID)
-	assert.Equal(t, officeCurrencyRate1.FromCurrencyID, officeCurrencyRate2.FromCurrencyID)
-	assert.Equal(t, officeCurrencyRate1.ToCurrencyID, officeCurrencyRate2.ToCurrencyID)
-	assert.Equal(t, officeCurrencyRate1.Rate, officeCurrencyRate2.Rate)
-	assert.WithinDuration(t, officeCurrencyRate1.CreatedAt, officeCurrencyRate2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, officeCurrencyRate2)
+	require.Equal(t, officeCurrencyRate1.ID, officeCurrencyRate2.ID)
+	require.Equal(t, officeCurrencyRate1.OfficeID, officeCurrencyRate2.OfficeID)
+	require.Equal(t, officeCurrencyRate1.FromCurrencyID, officeCurrencyRate2.FromCurrencyID)
+	require.Equal(t, officeCurrencyRate1.ToCurrencyID, officeCurrencyRate2.ToCurrencyID)
+	require.Equal(t, officeCurrencyRate1.Rate, officeCurrencyRate2.Rate)
+	require.WithinDuration(t, officeCurrencyRate1.CreatedAt, officeCurrencyRate2.CreatedAt, time.Second)
 }
 
 func TestListOfficeCurrencyRate(t *testing.T) {
@@ -87,11 +87,11 @@ func TestListOfficeCurrencyRate(t *testing.T) {
 	}
 
 	officeCurrencyRates, err := testQueries.ListOfficeCurrencyRate(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.Len(t, officeCurrencyRates, 5)
+	require.NoError(t, err)
+	require.Len(t, officeCurrencyRates, 5)
 
 	for _, officeCurrencyRate := range officeCurrencyRates {
-		assert.NotEmpty(t, officeCurrencyRate)
+		require.NotEmpty(t, officeCurrencyRate)
 	}
 }
 
@@ -99,12 +99,12 @@ func TestDeleteOfficeCurrencyRate(t *testing.T) {
 	officeCurrencyRate1 := createRandomOfficeCurrencyRate(t, createCurrencyRateParam{})
 
 	err := testQueries.DeleteOfficeCurrencyRate(context.Background(), officeCurrencyRate1.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	officeCurrencyRate2, err := testQueries.GetOfficeCurrencyRate(context.Background(), officeCurrencyRate1.ID)
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, officeCurrencyRate2)
+	require.Error(t, err)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, officeCurrencyRate2)
 }
 
 func TestUpdateOfficeCurrencyRate(t *testing.T) {
@@ -117,12 +117,12 @@ func TestUpdateOfficeCurrencyRate(t *testing.T) {
 	}
 
 	officeCurrencyRate2, err := testQueries.UpdateOfficeCurrencyRate(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, officeCurrencyRate2)
-	assert.Equal(t, officeCurrencyRate1.ID, officeCurrencyRate2.ID)
-	assert.Equal(t, officeCurrencyRate1.OfficeID, officeCurrencyRate2.OfficeID)
-	assert.Equal(t, officeCurrencyRate1.FromCurrencyID, officeCurrencyRate2.FromCurrencyID)
-	assert.Equal(t, officeCurrencyRate1.ToCurrencyID, officeCurrencyRate2.ToCurrencyID)
-	assert.Equal(t, arg.Rate, officeCurrencyRate2.Rate)
-	assert.WithinDuration(t, officeCurrencyRate1.CreatedAt, officeCurrencyRate2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, officeCurrencyRate2)
+	require.Equal(t, officeCurrencyRate1.ID, officeCurrencyRate2.ID)
+	require.Equal(t, officeCurrencyRate1.OfficeID, officeCurrencyRate2.OfficeID)
+	require.Equal(t, officeCurrencyRate1.FromCurrencyID, officeCurrencyRate2.FromCurrencyID)
+	require.Equal(t, officeCurrencyRate1.ToCurrencyID, officeCurrencyRate2.ToCurrencyID)
+	require.Equal(t, arg.Rate, officeCurrencyRate2.Rate)
+	require.WithinDuration(t, officeCurrencyRate1.CreatedAt, officeCurrencyRate2.CreatedAt, time.Second)
 }

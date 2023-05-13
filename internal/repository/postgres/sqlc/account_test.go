@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type createRandomAccountParam struct {
@@ -38,15 +38,15 @@ func createRandomAccount(t *testing.T, param createRandomAccountParam) Account {
 		CreatedBy:  param.UserID,
 	}
 	account, err := testQueries.CreateAccount(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, account)
-	assert.NotZero(t, account.ID)
-	assert.Equal(t, arg.Name, account.Name)
-	assert.Equal(t, arg.OfficeID, account.OfficeID)
-	assert.Equal(t, arg.CurrencyID, account.CurrencyID)
-	assert.Equal(t, arg.CreatedBy, account.CreatedBy)
-	assert.Equal(t, fmt.Sprintf("%f", float64(0)), account.Balance)
-	assert.NotZero(t, account.CreatedAt)
+	require.NoError(t, err)
+	require.NotEmpty(t, account)
+	require.NotZero(t, account.ID)
+	require.Equal(t, arg.Name, account.Name)
+	require.Equal(t, arg.OfficeID, account.OfficeID)
+	require.Equal(t, arg.CurrencyID, account.CurrencyID)
+	require.Equal(t, arg.CreatedBy, account.CreatedBy)
+	require.Equal(t, fmt.Sprintf("%f", float64(0)), account.Balance)
+	require.NotZero(t, account.CreatedAt)
 
 	return account
 }
@@ -58,15 +58,15 @@ func TestCreateAccount(t *testing.T) {
 func TestGetAccount(t *testing.T) {
 	account1 := createRandomAccount(t, createRandomAccountParam{})
 	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, account2)
-	assert.Equal(t, account1.ID, account2.ID)
-	assert.Equal(t, account1.Name, account2.Name)
-	assert.Equal(t, account1.OfficeID, account2.OfficeID)
-	assert.Equal(t, account1.CurrencyID, account2.CurrencyID)
-	assert.Equal(t, account1.CreatedBy, account2.CreatedBy)
-	assert.Equal(t, account1.Balance, account2.Balance)
-	assert.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, account2)
+	require.Equal(t, account1.ID, account2.ID)
+	require.Equal(t, account1.Name, account2.Name)
+	require.Equal(t, account1.OfficeID, account2.OfficeID)
+	require.Equal(t, account1.CurrencyID, account2.CurrencyID)
+	require.Equal(t, account1.CreatedBy, account2.CreatedBy)
+	require.Equal(t, account1.Balance, account2.Balance)
+	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 }
 
 func TestListAccount(t *testing.T) {
@@ -82,11 +82,11 @@ func TestListAccount(t *testing.T) {
 	}
 
 	accounts, err := testQueries.ListAccount(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.Len(t, accounts, 5)
+	require.NoError(t, err)
+	require.Len(t, accounts, 5)
 
 	for _, account := range accounts {
-		assert.NotEmpty(t, account)
+		require.NotEmpty(t, account)
 	}
 }
 
@@ -99,23 +99,43 @@ func TestUpdateAccount(t *testing.T) {
 		CurrencyID: currency.ID,
 	}
 	account2, err := testQueries.UpdateAccount(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, account2)
-	assert.Equal(t, account1.ID, account2.ID)
-	assert.Equal(t, arg.Name, account2.Name)
-	assert.Equal(t, account1.OfficeID, account2.OfficeID)
-	assert.Equal(t, arg.CurrencyID, account2.CurrencyID)
-	assert.Equal(t, account1.CreatedBy, account2.CreatedBy)
-	assert.Equal(t, account1.Balance, account2.Balance)
-	assert.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, account2)
+	require.Equal(t, account1.ID, account2.ID)
+	require.Equal(t, arg.Name, account2.Name)
+	require.Equal(t, account1.OfficeID, account2.OfficeID)
+	require.Equal(t, arg.CurrencyID, account2.CurrencyID)
+	require.Equal(t, account1.CreatedBy, account2.CreatedBy)
+	require.Equal(t, account1.Balance, account2.Balance)
+	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 }
 
 func TestDeleteAccount(t *testing.T) {
 	account1 := createRandomAccount(t, createRandomAccountParam{})
 	err := testQueries.DeleteAccount(context.Background(), account1.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, account2)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, account2)
+}
+
+func TestUpdateAccountBalance(t *testing.T) {
+	account1 := createRandomAccount(t, createRandomAccountParam{})
+
+	newBalance := fmt.Sprintf("%f", gofakeit.Price(100, 1000000))
+	arg := UpdateAccountBalanceParams{
+		ID:      account1.ID,
+		Balance: newBalance,
+	}
+
+	account2, err := testQueries.UpdateAccountBalance(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, account2)
+	require.Equal(t, account1.ID, account2.ID)
+	require.Equal(t, account1.Name, account2.Name)
+	require.Equal(t, account1.OfficeID, account2.OfficeID)
+	require.Equal(t, account1.CurrencyID, account2.CurrencyID)
+	require.Equal(t, account1.CreatedBy, account2.CreatedBy)
+	require.Equal(t, newBalance, account2.Balance)
 }

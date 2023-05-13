@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createRandomUser(t *testing.T, officeID int64) User {
@@ -31,19 +31,19 @@ func createRandomUser(t *testing.T, officeID int64) User {
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
 
-	assert.Equal(t, err, nil)
-	assert.NotEmpty(t, user)
-	assert.NotZero(t, user.ID)
-	assert.Equal(t, arg.OfficeID, user.OfficeID)
-	assert.Equal(t, arg.Username, user.Username)
-	assert.Equal(t, arg.PasswordHash, user.PasswordHash)
-	assert.Equal(t, arg.FirstName, user.FirstName)
-	assert.Equal(t, arg.LastName, user.LastName)
-	assert.Equal(t, arg.MiddleName, user.MiddleName)
-	assert.WithinDuration(t, arg.Birthday.Time, user.Birthday.Time, time.Second)
-	assert.Equal(t, arg.Email, user.Email)
-	assert.Equal(t, arg.Phone, user.Phone)
-	assert.NotEmpty(t, user.CreatedAt)
+	require.Equal(t, err, nil)
+	require.NotEmpty(t, user)
+	require.NotZero(t, user.ID)
+	require.Equal(t, arg.OfficeID, user.OfficeID)
+	require.Equal(t, arg.Username, user.Username)
+	require.Equal(t, arg.PasswordHash, user.PasswordHash)
+	require.Equal(t, arg.FirstName, user.FirstName)
+	require.Equal(t, arg.LastName, user.LastName)
+	require.Equal(t, arg.MiddleName, user.MiddleName)
+	require.WithinDuration(t, arg.Birthday.Time, user.Birthday.Time, time.Second)
+	require.Equal(t, arg.Email, user.Email)
+	require.Equal(t, arg.Phone, user.Phone)
+	require.NotEmpty(t, user.CreatedAt)
 
 	return user
 }
@@ -56,19 +56,19 @@ func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t, 0)
 
 	user2, err := testQueries.GetUser(context.Background(), user1.ID)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, user2)
-	assert.Equal(t, user1.ID, user2.ID)
-	assert.Equal(t, user1.OfficeID, user2.OfficeID)
-	assert.Equal(t, user1.Username, user2.Username)
-	assert.Equal(t, user1.PasswordHash, user2.PasswordHash)
-	assert.Equal(t, user1.FirstName, user2.FirstName)
-	assert.Equal(t, user1.LastName, user2.LastName)
-	assert.Equal(t, user1.MiddleName, user2.MiddleName)
-	assert.WithinDuration(t, user1.Birthday.Time, user2.Birthday.Time, time.Second)
-	assert.Equal(t, user1.Email, user2.Email)
-	assert.Equal(t, user1.Phone, user2.Phone)
-	assert.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+	require.Equal(t, user1.ID, user2.ID)
+	require.Equal(t, user1.OfficeID, user2.OfficeID)
+	require.Equal(t, user1.Username, user2.Username)
+	require.Equal(t, user1.PasswordHash, user2.PasswordHash)
+	require.Equal(t, user1.FirstName, user2.FirstName)
+	require.Equal(t, user1.LastName, user2.LastName)
+	require.Equal(t, user1.MiddleName, user2.MiddleName)
+	require.WithinDuration(t, user1.Birthday.Time, user2.Birthday.Time, time.Second)
+	require.Equal(t, user1.Email, user2.Email)
+	require.Equal(t, user1.Phone, user2.Phone)
+	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -86,19 +86,19 @@ func TestUpdateUser(t *testing.T) {
 	}
 
 	user2, err := testQueries.UpdateUser(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, user2)
-	assert.Equal(t, user1.ID, user2.ID)
-	assert.Equal(t, user1.OfficeID, user2.OfficeID)
-	assert.Equal(t, user1.Username, user2.Username)
-	assert.Equal(t, user1.PasswordHash, user2.PasswordHash)
-	assert.Equal(t, arg.FirstName, user2.FirstName)
-	assert.Equal(t, arg.LastName, user2.LastName)
-	assert.Equal(t, arg.MiddleName, user2.MiddleName)
-	assert.WithinDuration(t, arg.Birthday.Time, user2.Birthday.Time, time.Second)
-	assert.Equal(t, arg.Email, user2.Email)
-	assert.Equal(t, arg.Phone, user2.Phone)
-	assert.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+	require.Equal(t, user1.ID, user2.ID)
+	require.Equal(t, user1.OfficeID, user2.OfficeID)
+	require.Equal(t, user1.Username, user2.Username)
+	require.Equal(t, user1.PasswordHash, user2.PasswordHash)
+	require.Equal(t, arg.FirstName, user2.FirstName)
+	require.Equal(t, arg.LastName, user2.LastName)
+	require.Equal(t, arg.MiddleName, user2.MiddleName)
+	require.WithinDuration(t, arg.Birthday.Time, user2.Birthday.Time, time.Second)
+	require.Equal(t, arg.Email, user2.Email)
+	require.Equal(t, arg.Phone, user2.Phone)
+	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
 }
 
 func TestListUser(t *testing.T) {
@@ -114,12 +114,12 @@ func TestListUser(t *testing.T) {
 	}
 
 	users, err := testQueries.ListUser(context.Background(), arg)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, users)
-	assert.Len(t, users, 5)
+	require.NoError(t, err)
+	require.NotEmpty(t, users)
+	require.Len(t, users, 5)
 
 	for _, user := range users {
-		assert.NotEmpty(t, user)
+		require.NotEmpty(t, user)
 	}
 }
 
@@ -127,10 +127,10 @@ func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t, 0)
 
 	err := testQueries.DeleteUser(context.Background(), user1.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	user2, err := testQueries.GetUser(context.Background(), user1.ID)
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
-	assert.Empty(t, user2)
+	require.Error(t, err)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, user2)
 }
