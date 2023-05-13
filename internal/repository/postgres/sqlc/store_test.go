@@ -94,8 +94,8 @@ func TestTransferTx(t *testing.T) {
 		toAccountBalance, err := strconv.ParseFloat(toAccount.Balance, 64)
 		require.NoError(t, err)
 
-		diff1 := balance1 - fromAccountBalance
-		diff2 := toAccountBalance - balance2
+		diff1 := math.Round((balance1 - fromAccountBalance) * roundPrecision / roundPrecision)
+		diff2 := math.Round((toAccountBalance - balance2) * roundPrecision / roundPrecision)
 
 		require.Equal(t, diff1, diff2)
 		require.True(t, diff1 > 0)
@@ -120,5 +120,71 @@ func TestTransferTx(t *testing.T) {
 	updatedBalance2 := fmt.Sprintf("%f", account2Balance+float64(n)*amount)
 	require.Equal(t, updatedBalance1, updatedAccount1.Balance)
 	require.Equal(t, updatedBalance2, updatedAccount2.Balance)
+}
 
+func TestTransferTxDeadLock(t *testing.T) {
+	var err error
+	store := NewStore(testDB)
+
+	office := createRandomHqOffice(t)
+	currency := createRandomCurrency(t)
+	user := createRandomUser(t, office.ID)
+	account1 := createRandomAccount(t, createRandomAccountParam{office.ID, currency.ID, user.ID})
+	account1, err = testQueries.UpdateAccountBalance(context.Background(), UpdateAccountBalanceParams{
+		ID:      account1.ID,
+		Balance: fmt.Sprintf("%f", float64(gofakeit.Price(100, 10000))),
+	})
+	require.NoError(t, err)
+
+	account2 := createRandomAccount(t, createRandomAccountParam{office.ID, currency.ID, user.ID})
+	account2, err = testQueries.UpdateAccountBalance(context.Background(), UpdateAccountBalanceParams{
+		ID:      account2.ID,
+		Balance: fmt.Sprintf("%f", float64(gofakeit.Price(100, 10000))),
+	})
+	require.NoError(t, err)
+
+	n := 10
+	amount := float64(10)
+
+	errs := make(chan error)
+	for i := 0; i < n; i++ {
+		fromAccount := account1
+		toAccount := account2
+
+		if i%2 == 1 {
+			fromAccount = account2
+			toAccount = account1
+		}
+
+		go func() {
+			result, err := store.TransferTx(context.Background(), TransferTxParam{
+				OfficeID:      office.ID,
+				FromAccountID: fromAccount.ID,
+				ToAccountID:   toAccount.ID,
+				Amount:        amount,
+				CurrencyID:    currency.ID,
+				CreatedBy:     user.ID,
+			})
+			errs <- err
+		}()
+	}
+
+	for i := 0; i < n; i++ {
+		err := <-errs
+		require.NoError(t, err)
+	}
+
+	updatedAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+	updatedAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
+	account1Balance, err := strconv.ParseFloat(account1.Balance, 64)
+	require.NoError(t, err)
+	account2Balance, err := strconv.ParseFloat(account2.Balance, 64)
+	require.NoError(t, err)
+
+	updatedBalance1 := fmt.Sprintf("%f", account1Balance)
+	updatedBalance2 := fmt.Sprintf("%f", account2Balance)
+	require.Equal(t, updatedBalance1, updatedAccount1.Balance)
+	require.Equal(t, updatedBalance2, updatedAccount2.Balance)
 }

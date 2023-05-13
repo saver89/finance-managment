@@ -11,6 +11,7 @@ import (
 
 var testQueries *Queries
 var testDB *sql.DB
+var roundPrecision float64 = 1000000
 
 const (
 	dbDriver = "postgres"
