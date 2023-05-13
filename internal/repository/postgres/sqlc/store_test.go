@@ -32,7 +32,6 @@ func TestTransferTx(t *testing.T) {
 		Balance: fmt.Sprintf("%f", float64(gofakeit.Price(100, 10000))),
 	})
 	require.NoError(t, err)
-	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
 	n := 5
 	amount := float64(10)
@@ -40,10 +39,8 @@ func TestTransferTx(t *testing.T) {
 	errs := make(chan error)
 	results := make(chan TransferTxResult)
 	for i := 0; i < n; i++ {
-		txName := fmt.Sprintf("tx %d", i+1)
 		go func() {
-			ctx := context.WithValue(context.Background(), txKey, txName)
-			result, err := store.TransferTx(ctx, TransferTxParam{
+			result, err := store.TransferTx(context.Background(), TransferTxParam{
 				OfficeID:      office.ID,
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
@@ -88,8 +85,6 @@ func TestTransferTx(t *testing.T) {
 		require.Equal(t, account2.ID, toAccount.ID)
 
 		// check account balances
-		fmt.Println(">> tx:", i, fromAccount.Balance, toAccount.Balance)
-
 		balance1, err := strconv.ParseFloat(account1.Balance, 64)
 		require.NoError(t, err)
 		balance2, err := strconv.ParseFloat(account2.Balance, 64)
@@ -101,7 +96,6 @@ func TestTransferTx(t *testing.T) {
 
 		diff1 := balance1 - fromAccountBalance
 		diff2 := toAccountBalance - balance2
-		fmt.Println("tx balance", balance1, fromAccountBalance, diff1)
 
 		require.Equal(t, diff1, diff2)
 		require.True(t, diff1 > 0)
@@ -122,7 +116,6 @@ func TestTransferTx(t *testing.T) {
 	account2Balance, err := strconv.ParseFloat(account2.Balance, 64)
 	require.NoError(t, err)
 
-	fmt.Println(">>after:", updatedAccount1.Balance, updatedAccount2.Balance)
 	updatedBalance1 := fmt.Sprintf("%f", account1Balance-float64(n)*amount)
 	updatedBalance2 := fmt.Sprintf("%f", account2Balance+float64(n)*amount)
 	require.Equal(t, updatedBalance1, updatedAccount1.Balance)

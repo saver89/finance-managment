@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 )
 
 type Store struct {
@@ -52,17 +51,12 @@ type TransferTxResult struct {
 	ToAccount   Account
 }
 
-var txKey = struct{}{}
-
 func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 
-		txName := ctx.Value(txKey).(string)
-
-		fmt.Println(txName, "create transaction")
 		result.Transaction, err = q.CreateTransaction(ctx, CreateTransactionParams{
 			OfficeID:      arg.OfficeID,
 			Type:          TransactionTypeTransfer,
@@ -77,37 +71,17 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (Transf
 		}
 
 		// update account balance
-		fmt.Println(txName, "get fromAccount")
-		fromAccount, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
-		if err != nil {
-			return err
-		}
-		fromAccountBalance, err := strconv.ParseFloat(fromAccount.Balance, 64)
-		if err != nil {
-			return err
-		}
-		fmt.Println(txName, "update from account")
-		result.FromAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
-			ID:      fromAccount.ID,
-			Balance: fmt.Sprintf("%f", fromAccountBalance-arg.Amount),
+		result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:      arg.FromAccountID,
+			Balance: fmt.Sprintf("%f", -arg.Amount),
 		})
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(txName, "get to account")
-		toAccount, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
-		if err != nil {
-			return err
-		}
-		toAccountBalance, err := strconv.ParseFloat(toAccount.Balance, 64)
-		if err != nil {
-			return err
-		}
-		fmt.Println(txName, "update to account")
-		result.ToAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
-			ID:      toAccount.ID,
-			Balance: fmt.Sprintf("%f", toAccountBalance+arg.Amount),
+		result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:      arg.ToAccountID,
+			Balance: fmt.Sprintf("%f", arg.Amount),
 		})
 		if err != nil {
 			return err

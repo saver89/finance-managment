@@ -9,6 +9,34 @@ import (
 	"context"
 )
 
+const addAccountBalance = `-- name: AddAccountBalance :one
+update account set balance = balance + $2
+where id = $1 and deleted_at is null
+returning id, office_id, name, balance, currency_id, created_by, state, created_at, deleted_at
+`
+
+type AddAccountBalanceParams struct {
+	ID      int64  `db:"id"`
+	Balance string `db:"balance"`
+}
+
+func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
+	row := q.db.QueryRowContext(ctx, addAccountBalance, arg.ID, arg.Balance)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.OfficeID,
+		&i.Name,
+		&i.Balance,
+		&i.CurrencyID,
+		&i.CreatedBy,
+		&i.State,
+		&i.CreatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const createAccount = `-- name: CreateAccount :one
 insert into account (
   office_id, name, currency_id, created_by, state

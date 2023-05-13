@@ -27,5 +27,10 @@ update account set balance = $2
 where id = $1 and deleted_at is null
 returning *;
 
+-- name: AddAccountBalance :one
+update account set balance = balance + $2
+where id = $1 and deleted_at is null
+returning *;
+
 -- name: DeleteAccount :exec
 update account set deleted_at = now() where id = $1;
