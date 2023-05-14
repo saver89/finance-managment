@@ -6,6 +6,8 @@
     "DBTX",
     "dropdb",
     "gofakeit",
+    "healthcheck",
+    "isready",
     "sqlc"
   ]
 }
