@@ -28,4 +28,5 @@ func InitHttpV1(group *gin.RouterGroup, services ServiceParams) {
 
 func (hd *HttpDelivery) MapRoutes() {
 	hd.group.POST("/account", hd.accountHandlers.CreateAccount)
+	hd.group.GET("/account/:id", hd.accountHandlers.GetAccount)
 }

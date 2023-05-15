@@ -22,13 +22,29 @@ func NewAccountHandlers(accountService service.AccountService) *AccountHandlers 
 func (a *AccountHandlers) CreateAccount(ctx *gin.Context) {
 	var req request.CreateAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, httpErrors.ErrorResponse(err))
+		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
 		return
 	}
 
 	account, err := a.accountService.CreateAccount(ctx, &req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, httpErrors.ErrorResponse(err))
+		ctx.JSON(httpErrors.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (a *AccountHandlers) GetAccount(ctx *gin.Context) {
+	var req request.GetAccountRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
+		return
+	}
+
+	account, err := a.accountService.GetAccount(ctx, &req)
+	if err != nil {
+		ctx.JSON(httpErrors.ErrorResponse(err))
 		return
 	}
 
