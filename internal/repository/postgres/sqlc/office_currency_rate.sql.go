@@ -104,7 +104,7 @@ func (q *Queries) ListOfficeCurrencyRate(ctx context.Context, arg ListOfficeCurr
 		return nil, err
 	}
 	defer rows.Close()
-	var items []OfficeCurrencyRate
+	items := []OfficeCurrencyRate{}
 	for rows.Next() {
 		var i OfficeCurrencyRate
 		if err := rows.Scan(

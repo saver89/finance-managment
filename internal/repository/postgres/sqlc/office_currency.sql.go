@@ -80,7 +80,7 @@ func (q *Queries) ListOfficeCurrency(ctx context.Context, officeID int64) ([]Off
 		return nil, err
 	}
 	defer rows.Close()
-	var items []OfficeCurrency
+	items := []OfficeCurrency{}
 	for rows.Next() {
 		var i OfficeCurrency
 		if err := rows.Scan(

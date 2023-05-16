@@ -50,3 +50,19 @@ func (a *AccountHandlers) GetAccount(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, account)
 }
+
+func (a *AccountHandlers) ListAccount(ctx *gin.Context) {
+	var req request.ListAccountRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
+		return
+	}
+
+	accounts, err := a.accountService.ListAccount(ctx, &req)
+	if err != nil {
+		ctx.JSON(httpErrors.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, accounts)
+}

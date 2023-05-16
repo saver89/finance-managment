@@ -10,6 +10,10 @@ type CreateAccountResponse struct {
 }
 
 type GetAccountResponse struct {
-	Response
 	Account domain.Account `json:"account"`
+}
+
+type ListAccountResponse struct {
+	Accounts []domain.Account `json:"accounts"`
+	Total    int64            `json:"total"`
 }

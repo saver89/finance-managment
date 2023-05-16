@@ -10,3 +10,9 @@ type CreateAccountRequest struct {
 type GetAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
+
+type ListAccountRequest struct {
+	Page     int32 `form:"page" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=100"`
+	OfficeID int64 `form:"office_id" binding:"required,min=1"`
+}

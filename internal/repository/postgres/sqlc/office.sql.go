@@ -104,7 +104,7 @@ func (q *Queries) ListOffice(ctx context.Context, arg ListOfficeParams) ([]Offic
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Office
+	items := []Office{}
 	for rows.Next() {
 		var i Office
 		if err := rows.Scan(

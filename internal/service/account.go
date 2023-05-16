@@ -13,6 +13,7 @@ import (
 type AccountService interface {
 	CreateAccount(ctx context.Context, req *request.CreateAccountRequest) (*response.CreateAccountResponse, error)
 	GetAccount(ctx context.Context, req *request.GetAccountRequest) (*response.GetAccountResponse, error)
+	ListAccount(ctx context.Context, req *request.ListAccountRequest) (*response.ListAccountResponse, error)
 }
 
 type accountService struct {
@@ -56,11 +57,48 @@ func (a *accountService) GetAccount(ctx context.Context, req *request.GetAccount
 	}
 	resp := response.GetAccountResponse{}
 
-	balanceFloat, err := strconv.ParseFloat(account.Balance, 64)
+	domainAccount, err := dbAccountToDomain(account)
 	if err != nil {
 		return nil, err
 	}
-	resp.Account = domain.Account{
+	resp.Account = domainAccount
+
+	return &resp, nil
+}
+
+func (a *accountService) ListAccount(ctx context.Context, req *request.ListAccountRequest) (*response.ListAccountResponse, error) {
+	arg := db.ListAccountParams{
+		Limit:    req.PageSize,
+		Offset:   (req.Page - 1) * req.PageSize,
+		OfficeID: req.OfficeID,
+	}
+
+	accounts, err := a.store.ListAccount(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+	resp := response.ListAccountResponse{}
+	resp.Accounts = []domain.Account{}
+
+	for _, account := range accounts {
+		domainAccount, err := dbAccountToDomain(account)
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Accounts = append(resp.Accounts, domainAccount)
+	}
+
+	return &resp, nil
+}
+
+func dbAccountToDomain(account db.Account) (domain.Account, error) {
+	balanceFloat, err := strconv.ParseFloat(account.Balance, 64)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	domainAccount := domain.Account{
 		ID:         account.ID,
 		Name:       account.Name,
 		Balance:    balanceFloat,
@@ -71,5 +109,5 @@ func (a *accountService) GetAccount(ctx context.Context, req *request.GetAccount
 		CreatedAt:  account.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
 
-	return &resp, nil
+	return domainAccount, nil
 }
