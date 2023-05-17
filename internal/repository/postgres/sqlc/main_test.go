@@ -7,20 +7,22 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
+	"github.com/saver89/finance-management/config"
 )
 
-var testQueries *Queries
-var testDB *sql.DB
-var roundPrecision float64 = 1000000
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/finances?sslmode=disable"
+var (
+	roundPrecision float64 = 1000000
+	testDB         *sql.DB
+	testQueries    *Queries
 )
 
 func TestMain(m *testing.M) {
-	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("cannot load config: ", err)
+	}
+
+	testDB, err = sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}

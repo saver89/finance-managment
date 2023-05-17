@@ -8,6 +8,7 @@
     "gofakeit",
     "healthcheck",
     "isready",
+    "managment",
     "mapstructure",
     "sqlc"
   ]
