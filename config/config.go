@@ -8,9 +8,24 @@ import (
 )
 
 type Config struct {
-	DBDriver      string `mapstructure:"DB_DRIVER"`
-	DBSource      string `mapstructure:"DB_SOURCE"`
-	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	AppVersion string
+	Server     Server
+	PostgresDB PostgresDB
+}
+
+type Server struct {
+	Port    string
+	Address string
+}
+
+type PostgresDB struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	SslMode  string
+	Driver   string
+	DbName   string
 }
 
 const projectDirName = "finance-managment"
@@ -22,7 +37,7 @@ func LoadConfig() (config Config, err error) {
 
 	viper.AddConfigPath(string(rootPath) + `/config`)
 	viper.SetConfigName("app")
-	viper.SetConfigType("env")
+	viper.SetConfigType("yaml")
 
 	viper.AutomaticEnv()
 

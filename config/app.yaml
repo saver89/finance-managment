@@ -1,0 +1,14 @@
+AppVersion: 1.0.0
+
+Server:
+  Port: 8099
+  Address: 0.0.0.0
+
+PostgresDB:
+  Port: 5432
+  User: root
+  Password: secret
+  Host: localhost
+  SslMode: disable
+  Driver: "postgres"
+  DbName: "finances"

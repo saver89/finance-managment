@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -16,7 +17,15 @@ func main() {
 		log.Fatal("cannot load config: ", err)
 	}
 
-	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	connString := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		config.PostgresDB.Host,
+		config.PostgresDB.Port,
+		config.PostgresDB.User,
+		config.PostgresDB.Password,
+		config.PostgresDB.DbName,
+		config.PostgresDB.SslMode)
+	conn, err := sql.Open(config.PostgresDB.Driver, connString)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
@@ -24,7 +33,8 @@ func main() {
 	store := db.NewStore(conn)
 	server := server.NewServer(store)
 
-	err = server.Run(config.ServerAddress)
+	addressUri := fmt.Sprintf("%s:%s", config.Server.Address, config.Server.Port)
+	err = server.Run(addressUri)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

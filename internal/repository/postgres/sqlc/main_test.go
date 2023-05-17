@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -22,7 +23,15 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot load config: ", err)
 	}
 
-	testDB, err = sql.Open(config.DBDriver, config.DBSource)
+	connString := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		config.PostgresDB.Host,
+		config.PostgresDB.Port,
+		config.PostgresDB.User,
+		config.PostgresDB.Password,
+		config.PostgresDB.DbName,
+		config.PostgresDB.SslMode)
+	testDB, err = sql.Open(config.PostgresDB.Driver, connString)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
