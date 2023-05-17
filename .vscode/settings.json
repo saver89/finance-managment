@@ -4,12 +4,16 @@
     "brianvoe",
     "createdb",
     "DBTX",
+    "Debugf",
+    "dpanic",
     "dropdb",
     "gofakeit",
     "healthcheck",
+    "Infof",
     "isready",
     "managment",
     "mapstructure",
-    "sqlc"
+    "sqlc",
+    "Warnf"
   ]
 }

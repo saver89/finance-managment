@@ -11,11 +11,13 @@ type Config struct {
 	AppVersion string
 	Server     Server
 	PostgresDB PostgresDB
+	Logger     Logger
 }
 
 type Server struct {
-	Port    string
-	Address string
+	Port        string
+	Address     string
+	Development bool
 }
 
 type PostgresDB struct {
@@ -26,6 +28,10 @@ type PostgresDB struct {
 	SslMode  string
 	Driver   string
 	DbName   string
+}
+
+type Logger struct {
+	Level string
 }
 
 const projectDirName = "finance-managment"

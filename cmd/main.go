@@ -9,9 +9,11 @@ import (
 	"github.com/saver89/finance-management/config"
 	db "github.com/saver89/finance-management/internal/repository/postgres/sqlc"
 	"github.com/saver89/finance-management/internal/server"
+	"github.com/saver89/finance-management/pkg/logger"
 )
 
 func main() {
+	log.Println("Starting Finance Management APP...")
 	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("cannot load config: ", err)
@@ -29,6 +31,17 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
+
+	appLogger := logger.NewApiLogger(&config)
+	appLogger.InitLogger()
+	appLogger.Info("Starting user server")
+	appLogger.Infof(
+		"AppVersion: %s, LogLevel: %s, DevelopmentMode: %s",
+		config.AppVersion,
+		config.Logger.Level,
+		config.Server.Development,
+	)
+	appLogger.Infof("Success parsed config: %#v", config.AppVersion)
 
 	store := db.NewStore(conn)
 	server := server.NewServer(store)

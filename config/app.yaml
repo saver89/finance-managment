@@ -3,6 +3,7 @@ AppVersion: 1.0.0
 Server:
   Port: 8099
   Address: 0.0.0.0
+  Development: true
 
 PostgresDB:
   Port: 5432
@@ -12,3 +13,6 @@ PostgresDB:
   SslMode: disable
   Driver: "postgres"
   DbName: "finances"
+
+Logger:
+  Level: "debug"
