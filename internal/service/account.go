@@ -8,6 +8,7 @@ import (
 	"github.com/saver89/finance-management/internal/domain"
 	db "github.com/saver89/finance-management/internal/repository/postgres/sqlc"
 	"github.com/saver89/finance-management/internal/service/response"
+	"github.com/saver89/finance-management/pkg/logger"
 )
 
 type AccountService interface {
@@ -17,12 +18,14 @@ type AccountService interface {
 }
 
 type accountService struct {
-	store *db.Store
+	store db.Store
+	log   logger.Logger
 }
 
-func NewAccountService(store *db.Store) AccountService {
+func NewAccountService(store db.Store, log logger.Logger) AccountService {
 	return &accountService{
 		store: store,
+		log:   log,
 	}
 }
 

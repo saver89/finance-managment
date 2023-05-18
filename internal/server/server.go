@@ -5,22 +5,24 @@ import (
 	http_delivery "github.com/saver89/finance-management/internal/delivery/http/v1"
 	db "github.com/saver89/finance-management/internal/repository/postgres/sqlc"
 	"github.com/saver89/finance-management/internal/service"
+	"github.com/saver89/finance-management/pkg/logger"
 )
 
 type Server struct {
-	store  *db.Store
+	store  db.Store
 	router *gin.Engine
+	log    logger.Logger
 }
 
-func NewServer(store *db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(store db.Store, log logger.Logger) *Server {
+	server := &Server{store: store, log: log}
 	server.router = gin.Default()
 
 	v1Group := server.router.Group("/v1")
 
-	accountService := service.NewAccountService(store)
+	accountService := service.NewAccountService(store, server.log)
 
-	http_delivery.InitHttpV1(v1Group, http_delivery.ServiceParams{
+	http_delivery.NewHttpDelivery(server.log, v1Group, http_delivery.ServiceParams{
 		AccountService: accountService,
 	})
 

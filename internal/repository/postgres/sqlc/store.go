@@ -6,19 +6,24 @@ import (
 	"fmt"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParam) (TransferTxResult, error)
+}
+
+type StoreSQL struct {
 	*Queries
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &StoreSQL{
 		Queries: New(db),
 		db:      db,
 	}
 }
 
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *StoreSQL) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -51,7 +56,7 @@ type TransferTxResult struct {
 	ToAccount   Account
 }
 
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParam) (TransferTxResult, error) {
+func (store *StoreSQL) TransferTx(ctx context.Context, arg TransferTxParam) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	_ "github.com/golang/mock/mockgen/model"
 	_ "github.com/lib/pq"
 	"github.com/saver89/finance-management/config"
 	db "github.com/saver89/finance-management/internal/repository/postgres/sqlc"
@@ -34,7 +35,6 @@ func main() {
 
 	appLogger := logger.NewApiLogger(&config)
 	appLogger.InitLogger()
-	appLogger.Info("Starting user server")
 	appLogger.Infof(
 		"AppVersion: %s, LogLevel: %s, DevelopmentMode: %s",
 		config.AppVersion,
@@ -44,7 +44,7 @@ func main() {
 	appLogger.Infof("Success parsed config: %#v", config.AppVersion)
 
 	store := db.NewStore(conn)
-	server := server.NewServer(store)
+	server := server.NewServer(store, appLogger)
 
 	addressUri := fmt.Sprintf("%s:%s", config.Server.Address, config.Server.Port)
 	err = server.Run(addressUri)
