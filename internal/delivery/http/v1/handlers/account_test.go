@@ -86,7 +86,7 @@ func TestGetAccount(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			log := logger.NewApiLogger(&config.Config{Logger: config.Logger{Level: "debug"}})
+			log := logger.NewApiLogger(&config.Config{Logger: config.Logger{Level: "panic"}})
 			log.InitLogger()
 			srv := NewServer(store, log)
 

@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"os"
+
 	"github.com/saver89/finance-management/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -57,30 +59,29 @@ func (l *apiLogger) getLoggerLevel(cfg *config.Config) zapcore.Level {
 
 // InitLogger Init logger
 func (l *apiLogger) InitLogger() {
-	// logLevel := l.getLoggerLevel(l.cfg)
+	logLevel := l.getLoggerLevel(l.cfg)
 
-	// logWriter := zapcore.AddSync(os.Stderr)
+	logWriter := zapcore.AddSync(os.Stderr)
 
-	// var encoderCfg zapcore.EncoderConfig
-	// if l.cfg.Server.Development {
-	// 	encoderCfg = zap.NewDevelopmentEncoderConfig()
-	// } else {
-	// 	encoderCfg = zap.NewProductionEncoderConfig()
-	// }
+	var encoderCfg zapcore.EncoderConfig
+	if l.cfg.Server.Development {
+		encoderCfg = zap.NewDevelopmentEncoderConfig()
+	} else {
+		encoderCfg = zap.NewProductionEncoderConfig()
+	}
 
-	// var encoder zapcore.Encoder
-	// encoderCfg.LevelKey = "LEVEL"
-	// encoderCfg.CallerKey = "CALLER"
-	// encoderCfg.TimeKey = "TIME"
-	// encoderCfg.NameKey = "NAME"
-	// encoderCfg.MessageKey = "MESSAGE"
-	// encoder = zapcore.NewConsoleEncoder(encoderCfg)
+	var encoder zapcore.Encoder
+	encoderCfg.LevelKey = "LEVEL"
+	encoderCfg.CallerKey = "CALLER"
+	encoderCfg.TimeKey = "TIME"
+	encoderCfg.NameKey = "NAME"
+	encoderCfg.MessageKey = "MESSAGE"
+	encoder = zapcore.NewConsoleEncoder(encoderCfg)
 
-	// encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
-	// core := zapcore.NewCore(encoder, logWriter, zap.NewAtomicLevelAt(logLevel))
-	// logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+	core := zapcore.NewCore(encoder, logWriter, zap.NewAtomicLevelAt(logLevel))
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 
-	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
 
 	l.sugarLogger = logger.Sugar()
