@@ -309,81 +309,81 @@ func (ns NullUserState) Value() (driver.Value, error) {
 }
 
 type Account struct {
-	ID         int64        `db:"id"`
-	OfficeID   int64        `db:"office_id"`
-	Name       string       `db:"name"`
-	Balance    string       `db:"balance"`
-	CurrencyID int64        `db:"currency_id"`
-	CreatedBy  int64        `db:"created_by"`
-	State      AccountState `db:"state"`
-	CreatedAt  time.Time    `db:"created_at"`
-	DeletedAt  sql.NullTime `db:"deleted_at"`
+	ID         int64        `db:"id" json:"id"`
+	OfficeID   int64        `db:"office_id" json:"office_id"`
+	Name       string       `db:"name" json:"name"`
+	Balance    string       `db:"balance" json:"balance"`
+	CurrencyID int64        `db:"currency_id" json:"currency_id"`
+	CreatedBy  int64        `db:"created_by" json:"created_by"`
+	State      AccountState `db:"state" json:"state"`
+	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
+	DeletedAt  sql.NullTime `db:"deleted_at" json:"deleted_at"`
 }
 
 type Currency struct {
-	ID        int64         `db:"id"`
-	Name      string        `db:"name"`
-	ShortName string        `db:"short_name"`
-	State     CurrencyState `db:"state"`
-	CreatedAt time.Time     `db:"created_at"`
-	DeletedAt sql.NullTime  `db:"deleted_at"`
+	ID        int64         `db:"id" json:"id"`
+	Name      string        `db:"name" json:"name"`
+	ShortName string        `db:"short_name" json:"short_name"`
+	State     CurrencyState `db:"state" json:"state"`
+	CreatedAt time.Time     `db:"created_at" json:"created_at"`
+	DeletedAt sql.NullTime  `db:"deleted_at" json:"deleted_at"`
 }
 
 type Office struct {
-	ID        int64        `db:"id"`
-	ParentID  int64        `db:"parent_id"`
-	Type      OfficeType   `db:"type"`
-	Name      string       `db:"name"`
-	State     OfficeState  `db:"state"`
-	CreatedAt time.Time    `db:"created_at"`
-	DeletedAt sql.NullTime `db:"deleted_at"`
+	ID        int64        `db:"id" json:"id"`
+	ParentID  int64        `db:"parent_id" json:"parent_id"`
+	Type      OfficeType   `db:"type" json:"type"`
+	Name      string       `db:"name" json:"name"`
+	State     OfficeState  `db:"state" json:"state"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
 }
 
 type OfficeCurrency struct {
-	ID         int64              `db:"id"`
-	OfficeID   int64              `db:"office_id"`
-	CurrencyID int64              `db:"currency_id"`
-	Type       OfficeCurrencyType `db:"type"`
-	CreatedAt  time.Time          `db:"created_at"`
-	DeletedAt  sql.NullTime       `db:"deleted_at"`
+	ID         int64              `db:"id" json:"id"`
+	OfficeID   int64              `db:"office_id" json:"office_id"`
+	CurrencyID int64              `db:"currency_id" json:"currency_id"`
+	Type       OfficeCurrencyType `db:"type" json:"type"`
+	CreatedAt  time.Time          `db:"created_at" json:"created_at"`
+	DeletedAt  sql.NullTime       `db:"deleted_at" json:"deleted_at"`
 }
 
 type OfficeCurrencyRate struct {
-	ID             int64        `db:"id"`
-	OfficeID       int64        `db:"office_id"`
-	FromCurrencyID int64        `db:"from_currency_id"`
-	ToCurrencyID   int64        `db:"to_currency_id"`
-	Rate           string       `db:"rate"`
-	CreatedAt      time.Time    `db:"created_at"`
-	DeletedAt      sql.NullTime `db:"deleted_at"`
+	ID             int64        `db:"id" json:"id"`
+	OfficeID       int64        `db:"office_id" json:"office_id"`
+	FromCurrencyID int64        `db:"from_currency_id" json:"from_currency_id"`
+	ToCurrencyID   int64        `db:"to_currency_id" json:"to_currency_id"`
+	Rate           string       `db:"rate" json:"rate"`
+	CreatedAt      time.Time    `db:"created_at" json:"created_at"`
+	DeletedAt      sql.NullTime `db:"deleted_at" json:"deleted_at"`
 }
 
 type Transaction struct {
-	ID            int64           `db:"id"`
-	OfficeID      int64           `db:"office_id"`
-	Type          TransactionType `db:"type"`
-	FromAccountID int64           `db:"from_account_id"`
-	ToAccountID   sql.NullInt64   `db:"to_account_id"`
-	Amount        string          `db:"amount"`
-	CurrencyID    int64           `db:"currency_id"`
-	CreatedBy     sql.NullInt64   `db:"created_by"`
-	CreatedAt     time.Time       `db:"created_at"`
-	DeletedAt     sql.NullTime    `db:"deleted_at"`
+	ID            int64           `db:"id" json:"id"`
+	OfficeID      int64           `db:"office_id" json:"office_id"`
+	Type          TransactionType `db:"type" json:"type"`
+	FromAccountID int64           `db:"from_account_id" json:"from_account_id"`
+	ToAccountID   sql.NullInt64   `db:"to_account_id" json:"to_account_id"`
+	Amount        string          `db:"amount" json:"amount"`
+	CurrencyID    int64           `db:"currency_id" json:"currency_id"`
+	CreatedBy     sql.NullInt64   `db:"created_by" json:"created_by"`
+	CreatedAt     time.Time       `db:"created_at" json:"created_at"`
+	DeletedAt     sql.NullTime    `db:"deleted_at" json:"deleted_at"`
 }
 
 type User struct {
-	ID           int64          `db:"id"`
-	OfficeID     int64          `db:"office_id"`
-	Username     string         `db:"username"`
-	PasswordHash string         `db:"password_hash"`
-	FirstName    sql.NullString `db:"first_name"`
-	LastName     sql.NullString `db:"last_name"`
-	MiddleName   sql.NullString `db:"middle_name"`
-	Birthday     sql.NullTime   `db:"birthday"`
-	Email        sql.NullString `db:"email"`
-	Phone        sql.NullString `db:"phone"`
-	CreatedBy    sql.NullInt64  `db:"created_by"`
-	State        UserState      `db:"state"`
-	CreatedAt    time.Time      `db:"created_at"`
-	DeletedAt    sql.NullTime   `db:"deleted_at"`
+	ID           int64          `db:"id" json:"id"`
+	OfficeID     int64          `db:"office_id" json:"office_id"`
+	Username     string         `db:"username" json:"username"`
+	PasswordHash string         `db:"password_hash" json:"password_hash"`
+	FirstName    sql.NullString `db:"first_name" json:"first_name"`
+	LastName     sql.NullString `db:"last_name" json:"last_name"`
+	MiddleName   sql.NullString `db:"middle_name" json:"middle_name"`
+	Birthday     sql.NullTime   `db:"birthday" json:"birthday"`
+	Email        sql.NullString `db:"email" json:"email"`
+	Phone        sql.NullString `db:"phone" json:"phone"`
+	CreatedBy    sql.NullInt64  `db:"created_by" json:"created_by"`
+	State        UserState      `db:"state" json:"state"`
+	CreatedAt    time.Time      `db:"created_at" json:"created_at"`
+	DeletedAt    sql.NullTime   `db:"deleted_at" json:"deleted_at"`
 }

@@ -19,9 +19,9 @@ returning id, office_id, currency_id, type, created_at, deleted_at
 `
 
 type CreateOfficeCurrencyParams struct {
-	OfficeID   int64              `db:"office_id"`
-	CurrencyID int64              `db:"currency_id"`
-	Type       OfficeCurrencyType `db:"type"`
+	OfficeID   int64              `db:"office_id" json:"office_id"`
+	CurrencyID int64              `db:"currency_id" json:"currency_id"`
+	Type       OfficeCurrencyType `db:"type" json:"type"`
 }
 
 func (q *Queries) CreateOfficeCurrency(ctx context.Context, arg CreateOfficeCurrencyParams) (OfficeCurrency, error) {

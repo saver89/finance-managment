@@ -19,10 +19,10 @@ returning id, office_id, from_currency_id, to_currency_id, rate, created_at, del
 `
 
 type CreateOfficeCurrencyRateParams struct {
-	OfficeID       int64  `db:"office_id"`
-	FromCurrencyID int64  `db:"from_currency_id"`
-	ToCurrencyID   int64  `db:"to_currency_id"`
-	Rate           string `db:"rate"`
+	OfficeID       int64  `db:"office_id" json:"office_id"`
+	FromCurrencyID int64  `db:"from_currency_id" json:"from_currency_id"`
+	ToCurrencyID   int64  `db:"to_currency_id" json:"to_currency_id"`
+	Rate           string `db:"rate" json:"rate"`
 }
 
 func (q *Queries) CreateOfficeCurrencyRate(ctx context.Context, arg CreateOfficeCurrencyRateParams) (OfficeCurrencyRate, error) {
@@ -85,11 +85,11 @@ OFFSET $5
 `
 
 type ListOfficeCurrencyRateParams struct {
-	OfficeID       int64 `db:"office_id"`
-	FromCurrencyID int64 `db:"from_currency_id"`
-	ToCurrencyID   int64 `db:"to_currency_id"`
-	Limit          int32 `db:"limit"`
-	Offset         int32 `db:"offset"`
+	OfficeID       int64 `db:"office_id" json:"office_id"`
+	FromCurrencyID int64 `db:"from_currency_id" json:"from_currency_id"`
+	ToCurrencyID   int64 `db:"to_currency_id" json:"to_currency_id"`
+	Limit          int32 `db:"limit" json:"limit"`
+	Offset         int32 `db:"offset" json:"offset"`
 }
 
 func (q *Queries) ListOfficeCurrencyRate(ctx context.Context, arg ListOfficeCurrencyRateParams) ([]OfficeCurrencyRate, error) {
@@ -135,8 +135,8 @@ returning id, office_id, from_currency_id, to_currency_id, rate, created_at, del
 `
 
 type UpdateOfficeCurrencyRateParams struct {
-	ID   int64  `db:"id"`
-	Rate string `db:"rate"`
+	ID   int64  `db:"id" json:"id"`
+	Rate string `db:"rate" json:"rate"`
 }
 
 func (q *Queries) UpdateOfficeCurrencyRate(ctx context.Context, arg UpdateOfficeCurrencyRateParams) (OfficeCurrencyRate, error) {

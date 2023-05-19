@@ -13,6 +13,8 @@
     "isready",
     "managment",
     "mapstructure",
+    "mockdb",
+    "mockgen",
     "sqlc",
     "Warnf"
   ]

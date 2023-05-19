@@ -19,9 +19,9 @@ RETURNING id, parent_id, type, name, state, created_at, deleted_at
 `
 
 type AddOfficeParams struct {
-	ParentID int64      `db:"parent_id"`
-	Type     OfficeType `db:"type"`
-	Name     string     `db:"name"`
+	ParentID int64      `db:"parent_id" json:"parent_id"`
+	Type     OfficeType `db:"type" json:"type"`
+	Name     string     `db:"name" json:"name"`
 }
 
 func (q *Queries) AddOffice(ctx context.Context, arg AddOfficeParams) (Office, error) {
@@ -93,9 +93,9 @@ OFFSET $3
 `
 
 type ListOfficeParams struct {
-	Type   OfficeType `db:"type"`
-	Limit  int32      `db:"limit"`
-	Offset int32      `db:"offset"`
+	Type   OfficeType `db:"type" json:"type"`
+	Limit  int32      `db:"limit" json:"limit"`
+	Offset int32      `db:"offset" json:"offset"`
 }
 
 func (q *Queries) ListOffice(ctx context.Context, arg ListOfficeParams) ([]Office, error) {
@@ -137,8 +137,8 @@ RETURNING id, parent_id, type, name, state, created_at, deleted_at
 `
 
 type UpdateOfficeParams struct {
-	ID   int64  `db:"id"`
-	Name string `db:"name"`
+	ID   int64  `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
 }
 
 func (q *Queries) UpdateOffice(ctx context.Context, arg UpdateOfficeParams) (Office, error) {

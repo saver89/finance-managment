@@ -20,15 +20,15 @@ returning id, office_id, username, password_hash, first_name, last_name, middle_
 `
 
 type CreateUserParams struct {
-	OfficeID     int64          `db:"office_id"`
-	Username     string         `db:"username"`
-	PasswordHash string         `db:"password_hash"`
-	FirstName    sql.NullString `db:"first_name"`
-	LastName     sql.NullString `db:"last_name"`
-	MiddleName   sql.NullString `db:"middle_name"`
-	Birthday     sql.NullTime   `db:"birthday"`
-	Email        sql.NullString `db:"email"`
-	Phone        sql.NullString `db:"phone"`
+	OfficeID     int64          `db:"office_id" json:"office_id"`
+	Username     string         `db:"username" json:"username"`
+	PasswordHash string         `db:"password_hash" json:"password_hash"`
+	FirstName    sql.NullString `db:"first_name" json:"first_name"`
+	LastName     sql.NullString `db:"last_name" json:"last_name"`
+	MiddleName   sql.NullString `db:"middle_name" json:"middle_name"`
+	Birthday     sql.NullTime   `db:"birthday" json:"birthday"`
+	Email        sql.NullString `db:"email" json:"email"`
+	Phone        sql.NullString `db:"phone" json:"phone"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -105,9 +105,9 @@ OFFSET $2
 `
 
 type ListUserParams struct {
-	Limit    int32 `db:"limit"`
-	Offset   int32 `db:"offset"`
-	OfficeID int64 `db:"office_id"`
+	Limit    int32 `db:"limit" json:"limit"`
+	Offset   int32 `db:"offset" json:"offset"`
+	OfficeID int64 `db:"office_id" json:"office_id"`
 }
 
 func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, error) {
@@ -157,14 +157,14 @@ returning id, office_id, username, password_hash, first_name, last_name, middle_
 `
 
 type UpdateUserParams struct {
-	PasswordHash string         `db:"password_hash"`
-	FirstName    sql.NullString `db:"first_name"`
-	LastName     sql.NullString `db:"last_name"`
-	MiddleName   sql.NullString `db:"middle_name"`
-	Birthday     sql.NullTime   `db:"birthday"`
-	Email        sql.NullString `db:"email"`
-	Phone        sql.NullString `db:"phone"`
-	ID           int64          `db:"id"`
+	PasswordHash string         `db:"password_hash" json:"password_hash"`
+	FirstName    sql.NullString `db:"first_name" json:"first_name"`
+	LastName     sql.NullString `db:"last_name" json:"last_name"`
+	MiddleName   sql.NullString `db:"middle_name" json:"middle_name"`
+	Birthday     sql.NullTime   `db:"birthday" json:"birthday"`
+	Email        sql.NullString `db:"email" json:"email"`
+	Phone        sql.NullString `db:"phone" json:"phone"`
+	ID           int64          `db:"id" json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

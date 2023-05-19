@@ -8,6 +8,7 @@ sql:
       package: "db"
       out: "internal/repository/postgres/sqlc"
       emit_db_tags: true
+      emit_json_tags: true
       emit_prepared_queries: false
       emit_interface: true
       emit_exact_table_names: false

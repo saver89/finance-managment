@@ -16,8 +16,8 @@ returning id, office_id, name, balance, currency_id, created_by, state, created_
 `
 
 type AddAccountBalanceParams struct {
-	Amount string `db:"amount"`
-	ID     int64  `db:"id"`
+	Amount string `db:"amount" json:"amount"`
+	ID     int64  `db:"id" json:"id"`
 }
 
 func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
@@ -46,10 +46,10 @@ insert into account (
 `
 
 type CreateAccountParams struct {
-	OfficeID   int64  `db:"office_id"`
-	Name       string `db:"name"`
-	CurrencyID int64  `db:"currency_id"`
-	CreatedBy  int64  `db:"created_by"`
+	OfficeID   int64  `db:"office_id" json:"office_id"`
+	Name       string `db:"name" json:"name"`
+	CurrencyID int64  `db:"currency_id" json:"currency_id"`
+	CreatedBy  int64  `db:"created_by" json:"created_by"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -133,9 +133,9 @@ OFFSET $2
 `
 
 type ListAccountParams struct {
-	Limit    int32 `db:"limit"`
-	Offset   int32 `db:"offset"`
-	OfficeID int64 `db:"office_id"`
+	Limit    int32 `db:"limit" json:"limit"`
+	Offset   int32 `db:"offset" json:"offset"`
+	OfficeID int64 `db:"office_id" json:"office_id"`
 }
 
 func (q *Queries) ListAccount(ctx context.Context, arg ListAccountParams) ([]Account, error) {
@@ -178,9 +178,9 @@ returning id, office_id, name, balance, currency_id, created_by, state, created_
 `
 
 type UpdateAccountParams struct {
-	ID         int64  `db:"id"`
-	Name       string `db:"name"`
-	CurrencyID int64  `db:"currency_id"`
+	ID         int64  `db:"id" json:"id"`
+	Name       string `db:"name" json:"name"`
+	CurrencyID int64  `db:"currency_id" json:"currency_id"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
@@ -207,8 +207,8 @@ returning id, office_id, name, balance, currency_id, created_by, state, created_
 `
 
 type UpdateAccountBalanceParams struct {
-	ID      int64  `db:"id"`
-	Balance string `db:"balance"`
+	ID      int64  `db:"id" json:"id"`
+	Balance string `db:"balance" json:"balance"`
 }
 
 func (q *Queries) UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (Account, error) {

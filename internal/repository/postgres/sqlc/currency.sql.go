@@ -19,8 +19,8 @@ RETURNING id, name, short_name, state, created_at, deleted_at
 `
 
 type CreateCurrencyParams struct {
-	Name      string `db:"name"`
-	ShortName string `db:"short_name"`
+	Name      string `db:"name" json:"name"`
+	ShortName string `db:"short_name" json:"short_name"`
 }
 
 func (q *Queries) CreateCurrency(ctx context.Context, arg CreateCurrencyParams) (Currency, error) {
@@ -77,8 +77,8 @@ OFFSET $2
 `
 
 type ListCurrencyParams struct {
-	Limit  int32 `db:"limit"`
-	Offset int32 `db:"offset"`
+	Limit  int32 `db:"limit" json:"limit"`
+	Offset int32 `db:"offset" json:"offset"`
 }
 
 func (q *Queries) ListCurrency(ctx context.Context, arg ListCurrencyParams) ([]Currency, error) {
@@ -121,9 +121,9 @@ RETURNING id, name, short_name, state, created_at, deleted_at
 `
 
 type UpdateCurrencyParams struct {
-	ID        int64  `db:"id"`
-	Name      string `db:"name"`
-	ShortName string `db:"short_name"`
+	ID        int64  `db:"id" json:"id"`
+	Name      string `db:"name" json:"name"`
+	ShortName string `db:"short_name" json:"short_name"`
 }
 
 func (q *Queries) UpdateCurrency(ctx context.Context, arg UpdateCurrencyParams) (Currency, error) {

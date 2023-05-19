@@ -20,13 +20,13 @@ returning id, office_id, type, from_account_id, to_account_id, amount, currency_
 `
 
 type CreateTransactionParams struct {
-	OfficeID      int64           `db:"office_id"`
-	Type          TransactionType `db:"type"`
-	FromAccountID int64           `db:"from_account_id"`
-	ToAccountID   sql.NullInt64   `db:"to_account_id"`
-	Amount        string          `db:"amount"`
-	CurrencyID    int64           `db:"currency_id"`
-	CreatedBy     sql.NullInt64   `db:"created_by"`
+	OfficeID      int64           `db:"office_id" json:"office_id"`
+	Type          TransactionType `db:"type" json:"type"`
+	FromAccountID int64           `db:"from_account_id" json:"from_account_id"`
+	ToAccountID   sql.NullInt64   `db:"to_account_id" json:"to_account_id"`
+	Amount        string          `db:"amount" json:"amount"`
+	CurrencyID    int64           `db:"currency_id" json:"currency_id"`
+	CreatedBy     sql.NullInt64   `db:"created_by" json:"created_by"`
 }
 
 func (q *Queries) CreateTransaction(ctx context.Context, arg CreateTransactionParams) (Transaction, error) {
