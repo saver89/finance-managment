@@ -25,15 +25,14 @@ func NewAccountHandlers(log logger.Logger, accountService service.AccountService
 func (a *AccountHandlers) CreateAccount(ctx *gin.Context) {
 	var req request.CreateAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		a.log.Errorf("error while binding json: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, httpErrors.NewBadRequestError(err.Error)))
 		return
 	}
 
 	account, err := a.accountService.CreateAccount(ctx, &req)
 	if err != nil {
 		a.log.Errorf("error while creating account: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(err))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, err))
 		return
 	}
 
@@ -43,15 +42,13 @@ func (a *AccountHandlers) CreateAccount(ctx *gin.Context) {
 func (a *AccountHandlers) GetAccount(ctx *gin.Context) {
 	var req request.GetAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
-		a.log.Errorf("error while binding uri: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, httpErrors.NewBadRequestError(err)))
 		return
 	}
 
 	account, err := a.accountService.GetAccount(ctx, &req)
 	if err != nil {
-		a.log.Errorf("error while getting account: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(err))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, err))
 		return
 	}
 
@@ -61,15 +58,13 @@ func (a *AccountHandlers) GetAccount(ctx *gin.Context) {
 func (a *AccountHandlers) ListAccount(ctx *gin.Context) {
 	var req request.ListAccountRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		a.log.Errorf("error while binding query: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(httpErrors.NewBadRequestError(err.Error())))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, httpErrors.NewBadRequestError(err)))
 		return
 	}
 
 	accounts, err := a.accountService.ListAccount(ctx, &req)
 	if err != nil {
-		a.log.Errorf("error while listing accounts: %+v", err)
-		ctx.JSON(httpErrors.ErrorResponse(err))
+		ctx.JSON(httpErrors.ErrorResponse(a.log, err))
 		return
 	}
 

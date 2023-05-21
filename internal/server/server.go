@@ -21,9 +21,11 @@ func NewServer(store db.Store, log logger.Logger) *Server {
 	v1Group := server.router.Group("/v1")
 
 	accountService := service.NewAccountService(store, server.log)
+	transactionService := service.NewTransactionService(store, server.log)
 
 	http_delivery.NewHttpDelivery(server.log, v1Group, http_delivery.ServiceParams{
-		AccountService: accountService,
+		AccountService:     accountService,
+		TransactionService: transactionService,
 	})
 
 	return server

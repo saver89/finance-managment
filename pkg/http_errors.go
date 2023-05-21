@@ -7,43 +7,47 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/saver89/finance-management/pkg/logger"
 )
 
 const (
-	ErrBadRequest       = "Bad request"
-	ErrAlreadyExists    = "Already exists"
-	ErrNoSuchUser       = "User not found"
-	ErrWrongCredentials = "Wrong Credentials"
-	ErrNotFound         = "Not Found"
-	ErrUnauthorized     = "Unauthorized"
-	ErrForbidden        = "Forbidden"
-	ErrBadQueryParams   = "Invalid query params"
-	ErrRequestTimeout   = "Request Timeout"
-	ErrInvalidEmail     = "Invalid email"
-	ErrInvalidPassword  = "Invalid password"
-	ErrInvalidField     = "Invalid field"
+	BadRequest       = "Bad request"
+	AlreadyExists    = "Already exists"
+	NoSuchUser       = "User not found"
+	WrongCredentials = "Wrong Credentials"
+	NotFound         = "Not Found"
+	Unauthorized     = "Unauthorized"
+	Forbidden        = "Forbidden"
+	BadQueryParams   = "Invalid query params"
+	RequestTimeout   = "Request Timeout"
+	InvalidEmail     = "Invalid email"
+	InvalidPassword  = "Invalid password"
+	InvalidField     = "Invalid field"
+	ValidationError  = "Validation error"
 )
 
 var (
-	BadRequest            = errors.New("Bad request")
-	WrongCredentials      = errors.New("Wrong Credentials")
-	NotFound              = errors.New("Not Found")
-	Unauthorized          = errors.New("Unauthorized")
-	Forbidden             = errors.New("Forbidden")
-	PermissionDenied      = errors.New("Permission Denied")
-	ExpiredCSRFError      = errors.New("Expired CSRF token")
-	WrongCSRFToken        = errors.New("Wrong CSRF token")
-	CSRFNotPresented      = errors.New("CSRF not presented")
-	NotRequiredFields     = errors.New("No such required fields")
-	BadQueryParams        = errors.New("Invalid query params")
-	InternalServerError   = errors.New("Internal Server Error")
-	RequestTimeoutError   = errors.New("Request Timeout")
-	ExistsEmailError      = errors.New("User with given email already exists")
-	InvalidJWTToken       = errors.New("Invalid JWT token")
-	InvalidJWTClaims      = errors.New("Invalid JWT claims")
-	NotAllowedImageHeader = errors.New("Not allowed image header")
-	NoCookie              = errors.New("not found cookie header")
-	InvalidUUID           = errors.New("invalid uuid")
+	ErrBadRequest            = errors.New("bad request")
+	ErrWrongCredentials      = errors.New("wrong Credentials")
+	ErrNotFound              = errors.New("not Found")
+	ErrUnauthorized          = errors.New("unauthorized")
+	ErrForbidden             = errors.New("forbidden")
+	ErrPermissionDenied      = errors.New("permission Denied")
+	ErrExpiredCSRFError      = errors.New("expired CSRF token")
+	ErrWrongCSRFToken        = errors.New("wrong CSRF token")
+	ErrCSRFNotPresented      = errors.New("cSRF not presented")
+	ErrNotRequiredFields     = errors.New("no such required fields")
+	ErrBadQueryParams        = errors.New("invalid query params")
+	ErrInternalServerError   = errors.New("internal Server Error")
+	ErrRequestTimeoutError   = errors.New("request Timeout")
+	ErrExistsEmailError      = errors.New("user with given email already exists")
+	ErrInvalidJWTToken       = errors.New("invalid JWT token")
+	ErrInvalidJWTClaims      = errors.New("invalid JWT claims")
+	ErrNotAllowedImageHeader = errors.New("not allowed image header")
+	ErrNoCookie              = errors.New("not found cookie header")
+	ErrInvalidUUID           = errors.New("invalid uuid")
+	ErrValidationError       = errors.New("validation error")
 )
 
 // Rest error interface
@@ -103,7 +107,7 @@ func NewRestErrorFromBytes(bytes []byte) (RestErr, error) {
 func NewBadRequestError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusBadRequest,
-		ErrError:  BadRequest.Error(),
+		ErrError:  ErrBadRequest.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -112,7 +116,7 @@ func NewBadRequestError(causes interface{}) RestErr {
 func NewNotFoundError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusNotFound,
-		ErrError:  NotFound.Error(),
+		ErrError:  ErrNotFound.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -121,7 +125,7 @@ func NewNotFoundError(causes interface{}) RestErr {
 func NewUnauthorizedError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusUnauthorized,
-		ErrError:  Unauthorized.Error(),
+		ErrError:  ErrUnauthorized.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -130,7 +134,7 @@ func NewUnauthorizedError(causes interface{}) RestErr {
 func NewForbiddenError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusForbidden,
-		ErrError:  Forbidden.Error(),
+		ErrError:  ErrForbidden.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -139,7 +143,16 @@ func NewForbiddenError(causes interface{}) RestErr {
 func NewInternalServerError(causes interface{}) RestErr {
 	result := RestError{
 		ErrStatus: http.StatusInternalServerError,
-		ErrError:  InternalServerError.Error(),
+		ErrError:  ErrInternalServerError.Error(),
+		ErrCauses: causes,
+	}
+	return result
+}
+
+func NewValidationError(causes interface{}) RestErr {
+	result := RestError{
+		ErrStatus: http.StatusBadRequest,
+		ErrError:  ErrValidationError.Error(),
 		ErrCauses: causes,
 	}
 	return result
@@ -149,13 +162,15 @@ func NewInternalServerError(causes interface{}) RestErr {
 func ParseErrors(err error) RestErr {
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
-		return NewRestError(http.StatusNotFound, ErrNotFound, nil)
+		return NewRestError(http.StatusNotFound, NotFound, nil)
 	case errors.Is(err, context.DeadlineExceeded):
-		return NewRestError(http.StatusRequestTimeout, ErrRequestTimeout, nil)
-	case errors.Is(err, Unauthorized):
-		return NewRestError(http.StatusUnauthorized, ErrUnauthorized, nil)
-	case errors.Is(err, WrongCredentials):
-		return NewRestError(http.StatusUnauthorized, ErrUnauthorized, nil)
+		return NewRestError(http.StatusRequestTimeout, RequestTimeout, nil)
+	case errors.Is(err, ErrUnauthorized):
+		return NewRestError(http.StatusUnauthorized, Unauthorized, nil)
+	case errors.Is(err, ErrWrongCredentials):
+		return NewRestError(http.StatusUnauthorized, Unauthorized, nil)
+	case errors.Is(err, ErrValidationError):
+		return NewRestError(http.StatusBadRequest, ValidationError, err.Error())
 	default:
 		if restErr, ok := err.(RestErr); ok {
 			return restErr
@@ -165,6 +180,7 @@ func ParseErrors(err error) RestErr {
 }
 
 // Error response
-func ErrorResponse(err error) (int, interface{}) {
+func ErrorResponse(log logger.Logger, err error) (int, interface{}) {
+	log.Error(err.Error())
 	return ParseErrors(err).Status(), ParseErrors(err)
 }
