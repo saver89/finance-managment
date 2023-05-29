@@ -12,6 +12,7 @@ import (
 type ServiceParams struct {
 	AccountService     service.AccountService
 	TransactionService service.TransactionService
+	UserService        service.UserService
 }
 
 type HttpDelivery struct {
@@ -21,6 +22,7 @@ type HttpDelivery struct {
 
 	accountHandlers     *handlers.AccountHandlers
 	transactionHandlers *handlers.TransactionHandlers
+	userHandlers        *handlers.UserHandlers
 }
 
 func NewHttpDelivery(
@@ -34,6 +36,7 @@ func NewHttpDelivery(
 		log:                 log,
 		accountHandlers:     handlers.NewAccountHandlers(log, services.AccountService),
 		transactionHandlers: handlers.NewTransactionHandler(log, services.TransactionService),
+		userHandlers:        handlers.NewUserHandlers(log, services.UserService),
 	}
 
 	httpDelivery.MapRoutes()
@@ -51,4 +54,7 @@ func (hd *HttpDelivery) MapRoutes() {
 	hd.group.GET("/accounts", hd.accountHandlers.ListAccount)
 
 	hd.group.POST("/transfer", hd.transactionHandlers.CreateTransfer)
+
+	hd.group.POST("/user", hd.userHandlers.CreateUser)
+	hd.group.GET("/user/:id", hd.userHandlers.GetUser)
 }

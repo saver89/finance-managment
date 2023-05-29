@@ -10,8 +10,14 @@ postgres-dropdb:
 postgres-migrate-up:
 	migrate -path internal/repository/postgres/migration -database "postgresql://root:secret@localhost:5432/finances?sslmode=disable" -verbose up 
 
+postgres-migrate-up1:
+	migrate -path internal/repository/postgres/migration -database "postgresql://root:secret@localhost:5432/finances?sslmode=disable" -verbose up 1
+
 postgres-migrate-down:
 	migrate -path internal/repository/postgres/migration -database "postgresql://root:secret@localhost:5432/finances?sslmode=disable" -verbose down 
+
+postgres-migrate-down1:
+	migrate -path internal/repository/postgres/migration -database "postgresql://root:secret@localhost:5432/finances?sslmode=disable" -verbose down 1
 
 sqlc:
 	sqlc generate
@@ -25,4 +31,4 @@ server:
 mock:
 	mockgen -package mockdb -destination internal/repository/postgres/sqlc/mock/store.go github.com/saver89/finance-management/internal/repository/postgres/sqlc Store
 
-.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down sqlc test server mock
+.PHONY: postgres postgres-createdb postgres-dropdb postgres-migrate-up postgres-migrate-down sqlc test server mock postgres-migrate-down1 postgres-migrate-up1

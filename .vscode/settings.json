@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "alphanum",
     "birthdate",
     "brianvoe",
     "createdb",
@@ -16,6 +17,7 @@
     "mockdb",
     "mockgen",
     "sqlc",
+    "uidx",
     "Warnf",
     "zaptest"
   ]

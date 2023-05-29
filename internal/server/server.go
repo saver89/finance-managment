@@ -22,10 +22,12 @@ func NewServer(store db.Store, log logger.Logger) *Server {
 
 	accountService := service.NewAccountService(store, server.log)
 	transactionService := service.NewTransactionService(store, server.log)
+	userService := service.NewUserService(store, server.log)
 
 	http_delivery.NewHttpDelivery(server.log, v1Group, http_delivery.ServiceParams{
 		AccountService:     accountService,
 		TransactionService: transactionService,
+		UserService:        userService,
 	})
 
 	return server

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
+	passwordPkg "github.com/saver89/finance-management/pkg/password"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,10 +18,14 @@ func createRandomUser(t *testing.T, officeID int64) User {
 	}
 
 	person := gofakeit.Person()
+	password := gofakeit.Password(true, true, true, false, false, 10)
+	hashedPassword, err := passwordPkg.HashPassword(password)
+	require.NoError(t, err)
+
 	arg := CreateUserParams{
 		OfficeID:     officeID,
 		Username:     gofakeit.Username(),
-		PasswordHash: gofakeit.Password(true, true, true, false, false, 10),
+		PasswordHash: hashedPassword,
 		FirstName:    sql.NullString{String: person.FirstName, Valid: true},
 		LastName:     sql.NullString{String: person.LastName, Valid: true},
 		MiddleName:   sql.NullString{String: gofakeit.Name(), Valid: true},

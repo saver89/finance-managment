@@ -1,0 +1,1 @@
+drop index if exists uidx_user_email_deleted_at;
